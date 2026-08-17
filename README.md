@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dumnica
+
+Website for Dumnica Group, built with Next.js and Sanity CMS.
+
+## Tech Stack
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* Sanity CMS
+* GROQ
+* ESLint
+* Prettier
 
 ## Getting Started
 
-First, run the development server:
+Install the dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To create a production build:
 
-## Learn More
+```bash
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+app/          → Pages and routes
+components/   → Reusable UI components
+lib/          → Helper functions and shared logic
+sanity/       → Sanity CMS configuration and schemas
+public/       → Static assets
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Routing
 
-## Deploy on Vercel
+The project uses the Next.js App Router.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Each page has a real URL and is designed to be server-rendered for better SEO.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Sanity CMS
+
+Sanity is used to manage website content, including buildings and units.
+
+Content is fetched from Sanity using GROQ queries.
+
+## Development Workflow
+
+Do not work directly on `main`.
+
+Create a new branch for each task:
+
+```bash
+git checkout -b feature/task-name
+```
+
+After completing the work:
+
+1. Commit the changes
+2. Push the branch
+3. Open a Pull Request
+4. Get the changes reviewed
+5. Merge into `main`
