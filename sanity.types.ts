@@ -268,14 +268,24 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/lib/queries.ts
 // Variable: allProjectsQuery
-// Query: *[_type == "project"] | order(title asc) {    title,    slug,    city,    status,    mainPhoto,    description,    featured  }
+// Query: *[_type == "project"] | order(title asc) {    title,    slug,    city,    status,    mainPhoto {  ...,  asset->{    _id,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    description,    featured  }
 export type AllProjectsQueryResult = Array<{
   title: string | null;
   slug: Slug | null;
   city: string | null;
   status: "coming-soon" | "construction" | "finished" | null;
   mainPhoto: {
-    asset?: SanityImageAssetReference;
+    asset: {
+      _id: string;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -287,14 +297,24 @@ export type AllProjectsQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: projectBySlugQuery
-// Query: *[_type == "project" && slug.current == $slug][0] {    title,    slug,    city,    status,    mainPhoto,    video,    description,    specifications,    amenities,    location,    brochure,    gallery,    finishDate,    featured  }
+// Query: *[_type == "project" && slug.current == $slug][0] {    title,    slug,    city,    status,    mainPhoto {  ...,  asset->{    _id,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    video,    description,    specifications,    amenities,    location,    brochure,    gallery[] {  ...,  asset->{    _id,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    finishDate,    featured  }
 export type ProjectBySlugQueryResult = {
   title: string | null;
   slug: Slug | null;
   city: string | null;
   status: "coming-soon" | "construction" | "finished" | null;
   mainPhoto: {
-    asset?: SanityImageAssetReference;
+    asset: {
+      _id: string;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -311,7 +331,17 @@ export type ProjectBySlugQueryResult = {
     _type: "file";
   } | null;
   gallery: Array<{
-    asset?: SanityImageAssetReference;
+    asset: {
+      _id: string;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -324,7 +354,7 @@ export type ProjectBySlugQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: siteSettingsQuery
-// Query: *[_type == "siteSettings"][0] {    phone,    whatsapp,    email,    address,    socialLinks,    defaultShareImage  }
+// Query: *[_type == "siteSettings"][0] {    phone,    whatsapp,    email,    address,    socialLinks,    defaultShareImage {  ...,  asset->{    _id,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }}  }
 export type SiteSettingsQueryResult = {
   phone: string | null;
   whatsapp: string | null;
@@ -336,7 +366,17 @@ export type SiteSettingsQueryResult = {
     linkedin?: string;
   } | null;
   defaultShareImage: {
-    asset?: SanityImageAssetReference;
+    asset: {
+      _id: string;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -346,7 +386,7 @@ export type SiteSettingsQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: pageBySlugQuery
-// Query: *[_type == "page" && slug.current == $slug][0] {    title,    slug,    body,    seoTitle,    seoDescription,    seoImage  }
+// Query: *[_type == "page" && slug.current == $slug][0] {    title,    slug,    body,    seoTitle,    seoDescription,    seoImage {  ...,  asset->{    _id,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }}  }
 export type PageBySlugQueryResult = {
   title: string | null;
   slug: Slug | null;
@@ -371,7 +411,17 @@ export type PageBySlugQueryResult = {
   seoTitle: string | null;
   seoDescription: string | null;
   seoImage: {
-    asset?: SanityImageAssetReference;
+    asset: {
+      _id: string;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -383,9 +433,9 @@ export type PageBySlugQueryResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_type == "project"] | order(title asc) {\n    title,\n    slug,\n    city,\n    status,\n    mainPhoto,\n    description,\n    featured\n  }\n': AllProjectsQueryResult;
-    '\n  *[_type == "project" && slug.current == $slug][0] {\n    title,\n    slug,\n    city,\n    status,\n    mainPhoto,\n    video,\n    description,\n    specifications,\n    amenities,\n    location,\n    brochure,\n    gallery,\n    finishDate,\n    featured\n  }\n': ProjectBySlugQueryResult;
-    '\n  *[_type == "siteSettings"][0] {\n    phone,\n    whatsapp,\n    email,\n    address,\n    socialLinks,\n    defaultShareImage\n  }\n': SiteSettingsQueryResult;
-    '\n  *[_type == "page" && slug.current == $slug][0] {\n    title,\n    slug,\n    body,\n    seoTitle,\n    seoDescription,\n    seoImage\n  }\n': PageBySlugQueryResult;
+    '\n  *[_type == "project"] | order(title asc) {\n    title,\n    slug,\n    city,\n    status,\n    mainPhoto {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    description,\n    featured\n  }\n': AllProjectsQueryResult;
+    '\n  *[_type == "project" && slug.current == $slug][0] {\n    title,\n    slug,\n    city,\n    status,\n    mainPhoto {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    video,\n    description,\n    specifications,\n    amenities,\n    location,\n    brochure,\n    gallery[] {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    finishDate,\n    featured\n  }\n': ProjectBySlugQueryResult;
+    '\n  *[_type == "siteSettings"][0] {\n    phone,\n    whatsapp,\n    email,\n    address,\n    socialLinks,\n    defaultShareImage {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': SiteSettingsQueryResult;
+    '\n  *[_type == "page" && slug.current == $slug][0] {\n    title,\n    slug,\n    body,\n    seoTitle,\n    seoDescription,\n    seoImage {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': PageBySlugQueryResult;
   }
 }

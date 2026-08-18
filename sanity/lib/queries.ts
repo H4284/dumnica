@@ -1,12 +1,27 @@
 import { groq } from "next-sanity";
 
+const imageWithMetadataProjection = `{
+  ...,
+  asset->{
+    _id,
+    metadata {
+      lqip,
+      dimensions {
+        width,
+        height,
+        aspectRatio
+      }
+    }
+  }
+}`;
+
 export const allProjectsQuery = groq`
   *[_type == "project"] | order(title asc) {
     title,
     slug,
     city,
     status,
-    mainPhoto,
+    mainPhoto ${imageWithMetadataProjection},
     description,
     featured
   }
@@ -18,14 +33,14 @@ export const projectBySlugQuery = groq`
     slug,
     city,
     status,
-    mainPhoto,
+    mainPhoto ${imageWithMetadataProjection},
     video,
     description,
     specifications,
     amenities,
     location,
     brochure,
-    gallery,
+    gallery[] ${imageWithMetadataProjection},
     finishDate,
     featured
   }
@@ -38,7 +53,7 @@ export const siteSettingsQuery = groq`
     email,
     address,
     socialLinks,
-    defaultShareImage
+    defaultShareImage ${imageWithMetadataProjection}
   }
 `;
 
@@ -49,6 +64,6 @@ export const pageBySlugQuery = groq`
     body,
     seoTitle,
     seoDescription,
-    seoImage
+    seoImage ${imageWithMetadataProjection}
   }
 `;
