@@ -41,7 +41,7 @@ npm run build
 ```text
 app/          → Pages and routes
 components/   → Reusable UI components
-lib/          → Helper functions and shared logic
+sanity/lib/   → Sanity CMS configuration, schemas, queries and client
 sanity/       → Sanity CMS configuration and schemas
 public/       → Static assets
 ```
@@ -58,6 +58,17 @@ Sanity is used to manage website content, including buildings and units.
 
 Content is fetched from Sanity using GROQ queries.
 
+## Sanity TypeGen
+
+Sanity TypeGen generates TypeScript types from the Sanity schemas and GROQ queries.
+
+After changing any Sanity schema or query, run:
+
+```bash
+npx sanity schema extract
+npx sanity typegen generate
+```
+Do not write Sanity data types manually. Always regenerate them after changing CMS fields.
 ## Development Workflow
 
 Do not work directly on `main`.
