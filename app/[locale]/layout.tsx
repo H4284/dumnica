@@ -2,13 +2,14 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getSiteSettings } from "@/sanity/lib/client";
 
-export default async function LocaleLayout({
-  children,
-}: Readonly<{
+type LocaleLayoutProps = {
   children: React.ReactNode;
-}>) {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const { locale } = await params;
   const siteSettings = await getSiteSettings();
-  console.log("SITE SETTINGS:", siteSettings);
 
   return (
     <>
@@ -16,7 +17,7 @@ export default async function LocaleLayout({
         Skip to content
       </a>
 
-      <Header siteSettings={siteSettings} />
+      <Header siteSettings={siteSettings} locale={locale} />
 
       <main id="main-content">{children}</main>
 
