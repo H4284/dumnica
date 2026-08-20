@@ -28,6 +28,20 @@ export default defineType({
     }),
 
     defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      options: {
+        list: [
+          { title: "Shqip", value: "sq" },
+          { title: "English", value: "en" },
+        ],
+        layout: "radio",
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
       name: "body",
       title: "Përmbajtja",
       type: "array",

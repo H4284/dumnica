@@ -21,7 +21,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
       <main id="main-content">{children}</main>
 
-      <Footer siteSettings={siteSettings} />
+      <Footer siteSettings={siteSettings} locale={locale} />
     </>
   );
 }

@@ -37,8 +37,9 @@ export async function getSiteSettings(): Promise<SiteSettingsQueryResult> {
 
 export async function getPageBySlug(
   slug: string,
+  language: string,
 ): Promise<PageBySlugQueryResult> {
-  return client.fetch(pageBySlugQuery, { slug });
+  return client.fetch(pageBySlugQuery, { slug, language });
 }
 
 export async function getHomePage(): Promise<HomePageQueryResult> {

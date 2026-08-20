@@ -58,7 +58,11 @@ export const siteSettingsQuery = groq`
 `;
 
 export const pageBySlugQuery = groq`
-  *[_type == "page" && slug.current == $slug][0] {
+ *[
+    _type == "page" &&
+    slug.current == $slug &&
+    language == $language
+  ][0] {
     title,
     slug,
     body,
