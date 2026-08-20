@@ -17,6 +17,8 @@ const imageWithMetadataProjection = `{
 
 export const allProjectsQuery = groq`
   *[_type == "project"] | order(title asc) {
+    id,
+    _createdAt,
     title,
     slug,
     city,

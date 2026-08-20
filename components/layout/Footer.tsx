@@ -41,25 +41,25 @@ export default function Footer({ siteSettings, locale }: FooterProps) {
 
       <div>
       <a
-  href={
-    locale === "sq"
-      ? "/sq/politika-e-privatesise"
-      : "/en/privacy-policy"
-  }
->
-  {locale === "sq" ? "Politika e Privatësisë" : "Privacy Policy"}
-</a>
+      href={
+        locale === "sq"
+          ? "/sq/politika-e-privatesise"
+          : "/en/privacy-policy"
+      }
+    >
+      {locale === "sq" ? "Politika e Privatësisë" : "Privacy Policy"}
+    </a>
 
-<a
-  href={
-    locale === "sq"
-      ? "/sq/kushtet-e-perdorimit"
-      : "/en/terms"
-  }
->
-  {locale === "sq" ? "Kushtet e Përdorimit" : "Terms"}
-</a>
-      </div>
-    </footer>
-  );
-}
+    <a
+      href={
+        locale === "sq"
+          ? "/sq/kushtet-e-perdorimit"
+          : "/en/terms"
+      }
+    >
+      {locale === "sq" ? "Kushtet e Përdorimit" : "Terms"}
+    </a>
+          </div>
+        </footer>
+      );
+    }
