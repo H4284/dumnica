@@ -1,6 +1,7 @@
 import { createClient } from "next-sanity";
 import type {
   AllProjectsQueryResult,
+  HomePageQueryResult,
   PageBySlugQueryResult,
   ProjectBySlugQueryResult,
   SiteSettingsQueryResult,
@@ -10,6 +11,7 @@ import {
   pageBySlugQuery,
   projectBySlugQuery,
   siteSettingsQuery,
+  homePageQuery,
 } from "./queries";
 
 export const client = createClient({
@@ -37,4 +39,8 @@ export async function getPageBySlug(
   slug: string,
 ): Promise<PageBySlugQueryResult> {
   return client.fetch(pageBySlugQuery, { slug });
+}
+
+export async function getHomePage(): Promise<HomePageQueryResult> {
+  return client.fetch(homePageQuery);
 }

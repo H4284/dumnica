@@ -19,6 +19,7 @@ export default defineConfig({
         S.list()
           .title("Content")
           .items([
+            S.documentTypeListItem("homePage").title("Home Page"),
             S.documentTypeListItem("project").title("Projects"),
             S.documentTypeListItem("page").title("Pages"),
             S.listItem()

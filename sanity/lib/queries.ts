@@ -67,3 +67,46 @@ export const pageBySlugQuery = groq`
     seoImage ${imageWithMetadataProjection}
   }
 `;
+
+export const homePageQuery = groq`
+  *[_type == "homePage"][0] {
+    heroTitle,
+    heroImage {
+      ...,
+      asset->{
+  _id,
+  url,
+  metadata {
+    lqip,
+    dimensions {
+      width,
+      height,
+      aspectRatio
+    }
+  }
+}
+    },
+    heroButtonText,
+    heroButtonLink,
+    yearsOfExperience,
+    finishedProjects,
+    apartmentsDelivered,
+    aboutTitle,
+    aboutText,
+    aboutImage {
+      ...,
+      asset->{
+  _id,
+  url,
+  metadata {
+    lqip,
+    dimensions {
+      width,
+      height,
+      aspectRatio
+    }
+  }
+}
+    }
+  }
+`;

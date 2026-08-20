@@ -22,22 +22,28 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
-export type SiteSettings = {
+export type HomePage = {
   _id: string;
-  _type: "siteSettings";
+  _type: "homePage";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  phone?: string;
-  whatsapp?: string;
-  email?: string;
-  address?: string;
-  socialLinks?: {
-    instagram?: string;
-    facebook?: string;
-    linkedin?: string;
+  heroTitle?: string;
+  heroImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
   };
-  defaultShareImage?: {
+  heroButtonText?: string;
+  heroButtonLink?: string;
+  yearsOfExperience?: number;
+  finishedProjects?: number;
+  apartmentsDelivered?: number;
+  aboutTitle?: string;
+  aboutText?: string;
+  aboutImage?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
@@ -60,6 +66,30 @@ export type SanityImageHotspot = {
   y?: number;
   height?: number;
   width?: number;
+};
+
+export type SiteSettings = {
+  _id: string;
+  _type: "siteSettings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  phone?: string;
+  whatsapp?: string;
+  email?: string;
+  address?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    linkedin?: string;
+  };
+  defaultShareImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
 };
 
 export type Page = {
@@ -250,9 +280,10 @@ export type SanityImageAsset = {
 
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
-  | SiteSettings
+  | HomePage
   | SanityImageCrop
   | SanityImageHotspot
+  | SiteSettings
   | Page
   | Slug
   | SanityFileAssetReference
@@ -429,6 +460,56 @@ export type PageBySlugQueryResult = {
   } | null;
 } | null;
 
+// Source: sanity/lib/queries.ts
+// Variable: homePageQuery
+// Query: *[_type == "homePage"][0] {    heroTitle,    heroImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    },    heroButtonText,    heroButtonLink,    yearsOfExperience,    finishedProjects,    apartmentsDelivered,    aboutTitle,    aboutText,    aboutImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    }  }
+export type HomePageQueryResult = {
+  heroTitle: string | null;
+  heroImage: {
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  heroButtonText: string | null;
+  heroButtonLink: string | null;
+  yearsOfExperience: number | null;
+  finishedProjects: number | null;
+  apartmentsDelivered: number | null;
+  aboutTitle: string | null;
+  aboutText: string | null;
+  aboutImage: {
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+} | null;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -437,5 +518,6 @@ declare module "@sanity/client" {
     '\n  *[_type == "project" && slug.current == $slug][0] {\n    title,\n    slug,\n    city,\n    status,\n    mainPhoto {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    video,\n    description,\n    specifications,\n    amenities,\n    location,\n    brochure,\n    gallery[] {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    finishDate,\n    featured\n  }\n': ProjectBySlugQueryResult;
     '\n  *[_type == "siteSettings"][0] {\n    phone,\n    whatsapp,\n    email,\n    address,\n    socialLinks,\n    defaultShareImage {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': SiteSettingsQueryResult;
     '\n  *[_type == "page" && slug.current == $slug][0] {\n    title,\n    slug,\n    body,\n    seoTitle,\n    seoDescription,\n    seoImage {\n  ...,\n  asset->{\n    _id,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': PageBySlugQueryResult;
+    '\n  *[_type == "homePage"][0] {\n    heroTitle,\n    heroImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    },\n    heroButtonText,\n    heroButtonLink,\n    yearsOfExperience,\n    finishedProjects,\n    apartmentsDelivered,\n    aboutTitle,\n    aboutText,\n    aboutImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    }\n  }\n': HomePageQueryResult;
   }
 }
