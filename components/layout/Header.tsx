@@ -2,6 +2,7 @@ import type { SiteSettingsQueryResult } from "@/sanity.types";
 import Nav from "@/components/layout/Nav";
 import MobileNav from "@/components/layout/MobileNav";
 import LanguageSwitch from "@/components/layout/LanguageSwitch";
+import Link from "next/link";
 
 type HeaderProps = {
   siteSettings: SiteSettingsQueryResult;
@@ -12,7 +13,9 @@ export default function Header({ siteSettings, locale }: HeaderProps) {
     return (
       <header>
        <div className="header-inner">
-          <a href="/">Dumnica</a>
+       <Link href={`/${locale}`}>
+          Dumnica
+        </Link>
   
         <Nav locale={locale} />
   

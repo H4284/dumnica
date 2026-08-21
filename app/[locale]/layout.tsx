@@ -2,6 +2,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getSiteSettings } from "@/sanity/lib/client";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Analytics } from "@vercel/analytics/react";
 
 type LocaleLayoutProps = {
   children: React.ReactNode;
@@ -25,6 +26,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       </NuqsAdapter>
 
       <Footer siteSettings={siteSettings} locale={locale} />
+      
+      <Analytics />
     </>
   );
 }

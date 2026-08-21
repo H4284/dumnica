@@ -4,6 +4,7 @@ const imageWithMetadataProjection = `{
   ...,
   asset->{
     _id,
+    url,
     metadata {
       lqip,
       dimensions {
@@ -40,8 +41,16 @@ export const projectBySlugQuery = groq`
     description,
     specifications,
     amenities,
+    paymentPlan,
     location,
-    brochure,
+    brochure {
+  asset->{
+    _id,
+    url,
+    originalFilename,
+    mimeType
+  }
+},
     gallery[] ${imageWithMetadataProjection},
     finishDate,
     featured

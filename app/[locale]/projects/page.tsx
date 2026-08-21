@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import ProjectCard from "@/components/projects/ProjectCard";
 import ProjectFilters from "@/components/projects/ProjectFilters";
 import { getAllProjects } from "@/sanity/lib/client";
 
@@ -50,27 +49,15 @@ export default async function ProjectsPage({
       {filteredProjects.length === 0 ? (
         <p>No projects found.</p>
       ) : (
-        <div>
-          {filteredProjects.map((project) => (
-            <article key={project.slug?.current}>
-              <h2>{project.title}</h2>
-
-              {project.city && <p>{project.city}</p>}
-
-              {project.status && <p>{project.status}</p>}
-
-              {project.description && <p>{project.description}</p>}
-
-              {project.slug?.current && (
-                <Link
-                  href={`/${locale}/projects/${project.slug.current}`}
-                >
-                  View project
-                </Link>
-              )}
-            </article>
-          ))}
-        </div>
+        <div className="projects-grid">
+        {filteredProjects.map((project) => (
+          <ProjectCard
+            key={project.slug?.current}
+            project={project}
+            locale={locale}
+          />
+        ))}
+      </div>
       )}
     </main>
   );

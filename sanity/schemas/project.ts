@@ -123,6 +123,29 @@ export default defineType({
       description: "Aktivizoni nëse projekti duhet të shfaqet si featured.",
       initialValue: false,
     }),
+    
+    defineField({
+      name: "paymentPlan",
+      title: "Plani i pagesës",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "label",
+              title: "Përshkrimi",
+              type: "string",
+            }),
+            defineField({
+              name: "percentage",
+              title: "Përqindja",
+              type: "number",
+            }),
+          ],
+        },
+      ],
+    }),
   ],
 
   preview: {
@@ -132,4 +155,5 @@ export default defineType({
       media: "mainPhoto",
     },
   },
+  
 });
