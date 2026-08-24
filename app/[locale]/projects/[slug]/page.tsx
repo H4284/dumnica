@@ -82,7 +82,7 @@ export default async function ProjectPage({
         {project.city && <p>{project.city}</p>}
   
         {project.description && (
-          <p>{project.description}</p>
+          <p  className="prose-text" >{project.description}</p>
         )}
       </section>
 

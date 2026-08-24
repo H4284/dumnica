@@ -72,5 +72,13 @@ export default defineType({
         hotspot: true,
       },
     }),
+
+    defineField({
+      name: "afarizmiIntro",
+      title: "Afarizmi Intro",
+      type: "text",
+      rows: 3,
+      description: "Teksti i shkurtër që shfaqet mbi listën e ndërtesave.",
+    }),
   ],
 });

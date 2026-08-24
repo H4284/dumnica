@@ -22,6 +22,8 @@ export default defineConfig({
             S.documentTypeListItem("homePage").title("Home Page"),
             S.documentTypeListItem("project").title("Projects"),
             S.documentTypeListItem("page").title("Pages"),
+            S.documentTypeListItem("building").title("Buildings"),
+            S.documentTypeListItem("unit").title("Units"),
             S.listItem()
               .title("Site Settings")
               .id("siteSettings")

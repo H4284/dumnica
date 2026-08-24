@@ -108,6 +108,7 @@ export const homePageQuery = groq`
     apartmentsDelivered,
     aboutTitle,
     aboutText,
+    afarizmiIntro,
     aboutImage {
       ...,
       asset->{
@@ -123,5 +124,43 @@ export const homePageQuery = groq`
   }
 }
     }
+  }
+`;
+
+export const allBuildingsQuery = groq `*[_type == "building"] | order(order asc) {
+  _id,
+  title,
+  "slug": slug.current,
+  facadeImage ${imageWithMetadataProjection},
+  "total": count(*[_type == "unit" && building._ref == ^._id]),
+  "free": count(*[_type == "unit" && building._ref == ^._id && status == "i_lire"])
+}`;
+
+export const buildingBySlugQuery = groq`
+  *[_type == "building" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    order,
+    facadeImage ${imageWithMetadataProjection},
+    facadeViewBox,
+    floorsCount
+  }
+`;
+
+export const unitsByBuildingQuery = groq`
+  *[_type == "unit" && building._ref == $buildingId] {
+    _id,
+    code,
+    floor,
+    unitType,
+    rooms,
+    areaNet,
+    areaGross,
+    orientation,
+    status,
+    svgPath,
+    floorPlanImage,
+    price
   }
 `;

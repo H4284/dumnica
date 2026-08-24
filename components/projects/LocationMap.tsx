@@ -55,7 +55,7 @@ export default function LocationMap({
               left: "50%",
               top: "50%",
               transform: "translate(-50%, -50%)",
-              background: "white",
+              background: "var(--color-surface)",
               padding: "12px 20px",
               borderRadius: "8px",
               fontWeight: 600,

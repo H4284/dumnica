@@ -5,6 +5,9 @@ import type {
   PageBySlugQueryResult,
   ProjectBySlugQueryResult,
   SiteSettingsQueryResult,
+  AllBuildingsQueryResult,
+  BuildingBySlugQueryResult,
+UnitsByBuildingQueryResult,
 } from "../../sanity.types";
 import {
   allProjectsQuery,
@@ -12,6 +15,9 @@ import {
   projectBySlugQuery,
   siteSettingsQuery,
   homePageQuery,
+  allBuildingsQuery,
+  buildingBySlugQuery,
+  unitsByBuildingQuery,
 } from "./queries";
 
 export const client = createClient({
@@ -44,4 +50,20 @@ export async function getPageBySlug(
 
 export async function getHomePage(): Promise<HomePageQueryResult> {
   return client.fetch(homePageQuery);
+}
+
+export async function getAllBuildings(): Promise<AllBuildingsQueryResult> {
+  return client.fetch(allBuildingsQuery);
+}
+
+export async function getBuildingBySlug(
+  slug: string,
+): Promise<BuildingBySlugQueryResult> {
+  return client.fetch(buildingBySlugQuery, { slug });
+}
+
+export async function getUnitsByBuilding(
+  buildingId: string,
+): Promise<UnitsByBuildingQueryResult> {
+  return client.fetch(unitsByBuildingQuery, { buildingId });
 }

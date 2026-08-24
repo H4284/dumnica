@@ -15,11 +15,94 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
+export type BuildingReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "building";
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type Unit = {
+  _id: string;
+  _type: "unit";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  code?: string;
+  building?: BuildingReference;
+  floor?: number;
+  unitType?: "banesor" | "afarist";
+  rooms?: number;
+  areaNet?: number;
+  areaGross?: number;
+  orientation?: Array<string>;
+  status?: "i_lire" | "i_rezervuar" | "i_shitur";
+  svgPath?: string;
+  floorPlanImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  price?: number;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
+export type ProjectReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "project";
+};
+
+export type Building = {
+  _id: string;
+  _type: "building";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  project?: ProjectReference;
+  facadeImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  facadeViewBox?: string;
+  floorsCount?: number;
+  order?: number;
+};
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
 };
 
 export type HomePage = {
@@ -50,22 +133,6 @@ export type HomePage = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
 };
 
 export type SiteSettings = {
@@ -127,12 +194,6 @@ export type Page = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-};
-
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
 };
 
 export type SanityFileAssetReference = {
@@ -284,13 +345,17 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
+  | BuildingReference
   | SanityImageAssetReference
-  | HomePage
+  | Unit
   | SanityImageCrop
   | SanityImageHotspot
+  | ProjectReference
+  | Building
+  | Slug
+  | HomePage
   | SiteSettings
   | Page
-  | Slug
   | SanityFileAssetReference
   | Project
   | Geopoint
@@ -482,7 +547,7 @@ export type PageBySlugQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: homePageQuery
-// Query: *[_type == "homePage"][0] {    heroTitle,    heroImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    },    heroButtonText,    heroButtonLink,    yearsOfExperience,    finishedProjects,    apartmentsDelivered,    aboutTitle,    aboutText,    aboutImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    }  }
+// Query: *[_type == "homePage"][0] {    heroTitle,    heroImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    },    heroButtonText,    heroButtonLink,    yearsOfExperience,    finishedProjects,    apartmentsDelivered,    aboutTitle,    aboutText,    afarizmiIntro,    aboutImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    }  }
 export type HomePageQueryResult = {
   heroTitle: string | null;
   heroImage: {
@@ -510,6 +575,7 @@ export type HomePageQueryResult = {
   apartmentsDelivered: number | null;
   aboutTitle: string | null;
   aboutText: string | null;
+  afarizmiIntro: null;
   aboutImage: {
     asset: {
       _id: string;
@@ -530,6 +596,89 @@ export type HomePageQueryResult = {
   } | null;
 } | null;
 
+// Source: sanity/lib/queries.ts
+// Variable: allBuildingsQuery
+// Query: *[_type == "building"] | order(order asc) {  _id,  title,  "slug": slug.current,  facadeImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},  "total": count(*[_type == "unit" && building._ref == ^._id]),  "free": count(*[_type == "unit" && building._ref == ^._id && status == "i_lire"])}
+export type AllBuildingsQueryResult = Array<{
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  facadeImage: {
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  total: number;
+  free: number;
+}>;
+
+// Source: sanity/lib/queries.ts
+// Variable: buildingBySlugQuery
+// Query: *[_type == "building" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    order,    facadeImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    facadeViewBox,    floorsCount  }
+export type BuildingBySlugQueryResult = {
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  order: number | null;
+  facadeImage: {
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  facadeViewBox: string | null;
+  floorsCount: number | null;
+} | null;
+
+// Source: sanity/lib/queries.ts
+// Variable: unitsByBuildingQuery
+// Query: *[_type == "unit" && building._ref == $buildingId] {    _id,    code,    floor,    unitType,    rooms,    areaNet,    areaGross,    orientation,    status,    svgPath,    floorPlanImage,    price  }
+export type UnitsByBuildingQueryResult = Array<{
+  _id: string;
+  code: string | null;
+  floor: number | null;
+  unitType: "afarist" | "banesor" | null;
+  rooms: number | null;
+  areaNet: number | null;
+  areaGross: number | null;
+  orientation: Array<string> | null;
+  status: "i_lire" | "i_rezervuar" | "i_shitur" | null;
+  svgPath: string | null;
+  floorPlanImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  price: number | null;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -538,6 +687,9 @@ declare module "@sanity/client" {
     '\n  *[_type == "project" && slug.current == $slug][0] {\n    title,\n    slug,\n    city,\n    status,\n    mainPhoto {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    video,\n    description,\n    specifications,\n    amenities,\n    paymentPlan,\n    location,\n    brochure {\n  asset->{\n    _id,\n    url,\n    originalFilename,\n    mimeType\n  }\n},\n    gallery[] {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    finishDate,\n    featured\n  }\n': ProjectBySlugQueryResult;
     '\n  *[_type == "siteSettings"][0] {\n    phone,\n    whatsapp,\n    email,\n    address,\n    socialLinks,\n    defaultShareImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': SiteSettingsQueryResult;
     '\n *[\n    _type == "page" &&\n    slug.current == $slug &&\n    language == $language\n  ][0] {\n    title,\n    slug,\n    body,\n    seoTitle,\n    seoDescription,\n    seoImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': PageBySlugQueryResult;
-    '\n  *[_type == "homePage"][0] {\n    heroTitle,\n    heroImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    },\n    heroButtonText,\n    heroButtonLink,\n    yearsOfExperience,\n    finishedProjects,\n    apartmentsDelivered,\n    aboutTitle,\n    aboutText,\n    aboutImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    }\n  }\n': HomePageQueryResult;
+    '\n  *[_type == "homePage"][0] {\n    heroTitle,\n    heroImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    },\n    heroButtonText,\n    heroButtonLink,\n    yearsOfExperience,\n    finishedProjects,\n    apartmentsDelivered,\n    aboutTitle,\n    aboutText,\n    afarizmiIntro,\n    aboutImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    }\n  }\n': HomePageQueryResult;
+    '*[_type == "building"] | order(order asc) {\n  _id,\n  title,\n  "slug": slug.current,\n  facadeImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n  "total": count(*[_type == "unit" && building._ref == ^._id]),\n  "free": count(*[_type == "unit" && building._ref == ^._id && status == "i_lire"])\n}': AllBuildingsQueryResult;
+    '\n  *[_type == "building" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    order,\n    facadeImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    facadeViewBox,\n    floorsCount\n  }\n': BuildingBySlugQueryResult;
+    '\n  *[_type == "unit" && building._ref == $buildingId] {\n    _id,\n    code,\n    floor,\n    unitType,\n    rooms,\n    areaNet,\n    areaGross,\n    orientation,\n    status,\n    svgPath,\n    floorPlanImage,\n    price\n  }\n': UnitsByBuildingQueryResult;
   }
 }
