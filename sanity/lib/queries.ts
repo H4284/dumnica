@@ -160,7 +160,15 @@ export const unitsByBuildingQuery = groq`
     orientation,
     status,
     svgPath,
-    floorPlanImage,
+    floorPlanImage ${imageWithMetadataProjection},
+    floorPlanPdf {
+  asset->{
+    _id,
+    url,
+    originalFilename,
+    mimeType
+  }
+},
     price
   }
 `;

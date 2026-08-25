@@ -146,6 +146,17 @@ export default defineType({
     }),
 
     defineField({
+      name: "floorPlanPdf",
+      title: "PDF e planimetrisë",
+      type: "file",
+      options: {
+        accept: ".pdf",
+      },
+      description:
+        "Opsionale. PDF-ja e planimetrisë specifike për këtë njësi.",
+    }),
+
+    defineField({
       name: "price",
       title: "Çmimi",
       type: "number",
