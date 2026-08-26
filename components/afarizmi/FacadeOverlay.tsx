@@ -2,6 +2,10 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import {
+  TransformComponent,
+  TransformWrapper,
+} from "react-zoom-pan-pinch";
 
 import SvgOverlay from "./SvgOverlay";
 
@@ -60,41 +64,76 @@ export default function FacadeOverlay({
 
   return (
     <section>
-      <div className="relative w-full overflow-hidden rounded-lg">
-        <Image
-          src={imageUrl}
-          alt={buildingTitle}
-          width={1600}
-          height={900}
-          sizes="(max-width: 768px) 100vw, 1200px"
-          className="block h-auto w-full"
-          priority
-        />
-
-        <SvgOverlay
-          viewBox={facadeViewBox}
-          units={units}
-          visibleUnitIds={visibleUnitIds}
-          selectedUnit={selectedUnit}
-          onSelect={(unit) => {
-            setHoveredUnit(null);
-            onSelectUnit?.(unit);
+      <div className="relative w-full overflow-hidden rounded-lg bg-gray-100">
+        <TransformWrapper
+          initialScale={1}
+          minScale={1}
+          maxScale={4}
+          centerOnInit
+          wheel={{
+            step: 0.1,
           }}
-          onUnitElementReady={onUnitElementReady}
-        />
+          pinch={{
+            step: 5,
+          }}
+          doubleClick={{
+            disabled: true,
+          }}
+          panning={{
+            velocityDisabled: true,
+          }}
+        >
+          <TransformComponent
+            wrapperClass="!w-full"
+            contentClass="relative !w-full"
+          >
+            <div className="relative w-full">
+              <Image
+                src={imageUrl}
+                alt={buildingTitle}
+                width={1600}
+                height={900}
+                sizes="(max-width: 768px) 100vw, 1200px"
+                className="block h-auto w-full select-none"
+                priority
+                draggable={false}
+              />
 
-        {hoveredUnit && (
-          <div className="pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-lg bg-black/80 px-4 py-3 text-sm text-white shadow-lg">
-            <p className="font-semibold">{hoveredUnit.code}</p>
+              <SvgOverlay
+                viewBox={facadeViewBox}
+                units={units}
+                visibleUnitIds={visibleUnitIds}
+                selectedUnit={selectedUnit}
+                onSelect={(unit) => {
+                  setHoveredUnit(null);
+                  onSelectUnit?.(unit);
+                }}
+                onUnitElementReady={onUnitElementReady}
+              />
 
-            <p>
-              {hoveredUnit.rooms ?? "-"} dhoma ·{" "}
-              {hoveredUnit.areaNet ?? "-"} m²
-            </p>
+              {hoveredUnit && (
+                <div className="pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-lg bg-black/80 px-4 py-3 text-sm text-white shadow-lg">
+                  <p className="font-semibold">
+                    {hoveredUnit.code}
+                  </p>
 
-            <p>{getStatusLabel(hoveredUnit.status)}</p>
-          </div>
-        )}
+                  <p>
+                    {hoveredUnit.rooms ?? "-"} dhoma ·{" "}
+                    {hoveredUnit.areaNet ?? "-"} m²
+                  </p>
+
+                  <p>
+                    {getStatusLabel(hoveredUnit.status)}
+                  </p>
+                </div>
+              )}
+            </div>
+          </TransformComponent>
+        </TransformWrapper>
+
+        <div className="pointer-events-none absolute bottom-3 right-3 z-20 rounded-md bg-black/70 px-3 py-2 text-xs text-white sm:hidden">
+          Pinch për zoom · Zvarrit për lëvizje
+        </div>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-4 text-sm">

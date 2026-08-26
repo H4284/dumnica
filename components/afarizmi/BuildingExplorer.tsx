@@ -17,6 +17,18 @@ type Props = {
   units: UnitsByBuildingQueryResult;
   whatsappNumber: string;
 };
+function getStatusLabel(status: Unit["status"]) {
+  switch (status) {
+    case "i_lire":
+      return "I lirë";
+    case "i_rezervuar":
+      return "I rezervuar";
+    case "i_shitur":
+      return "I shitur";
+    default:
+      return "Pa status";
+  }
+}
 
 export default function BuildingExplorer({
   building,
@@ -171,7 +183,54 @@ export default function BuildingExplorer({
         onSelectUnit={handleSelectUnit}
         visibleUnitIds={visibleUnitIds}
       />
+      <div className="sr-only">
+  <table>
+    <caption>Lista e njësive në {building.title ?? "objektin"}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Njësia</th>
+        <th scope="col">Kati</th>
+        <th scope="col">Dhoma</th>
+        <th scope="col">Sipërfaqja</th>
+        <th scope="col">Statusi</th>
+      </tr>
+    </thead>
 
+    <tbody>
+      {filteredUnits.map((unit) => (
+        <tr key={unit._id}>
+          <td>
+            <button
+              type="button"
+              onClick={() => handleSelectUnit(unit)}
+              disabled={unit.status === "i_shitur"}
+            >
+              {unit.code ?? "Pa kod"}
+            </button>
+          </td>
+
+          <td>
+            {unit.floor === 0
+              ? "Përdhesë"
+              : unit.floor !== null
+                ? `Kati ${unit.floor}`
+                : "—"}
+          </td>
+
+          <td>{unit.rooms ?? "—"}</td>
+
+          <td>
+            {unit.areaNet !== null && unit.areaNet !== undefined
+              ? `${unit.areaNet} m²`
+              : "—"}
+          </td>
+
+          <td>{getStatusLabel(unit.status)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
       <UnitPanel
         unit={visibleSelectedUnit}
         onClose={handleClosePanel}

@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
-import { useState } from "react";
-import type { UnitsByBuildingQueryResult } from "@/sanity.types";
-import LeadForm from "./LeadForm";
+import { useEffect, useRef, useState } from "react";
 
+import type { UnitsByBuildingQueryResult } from "@/sanity.types";
+
+import LeadForm from "./LeadForm";
 
 type Unit = UnitsByBuildingQueryResult[number];
 
@@ -46,9 +46,11 @@ export default function UnitPanel({
   onClose,
   whatsappNumber,
 }: Props) {
-  const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+
   const [showLeadForm, setShowLeadForm] = useState(false);
+  const [swipeStartY, setSwipeStartY] = useState<number | null>(null);
+  const [swipeDistance, setSwipeDistance] = useState(0);
 
   useEffect(() => {
     if (!unit) {
@@ -76,7 +78,11 @@ export default function UnitPanel({
   }
 
   const floorLabel =
-    unit.floor === 0 ? "Përdhesë" : `Kati ${unit.floor}`;
+    unit.floor === 0
+      ? "Përdhesë"
+      : unit.floor !== null
+        ? `Kati ${unit.floor}`
+        : "—";
 
   const whatsappMessage = encodeURIComponent(
     `Përshëndetje, jam i interesuar për njësinë ${unit.code}`,
@@ -84,34 +90,117 @@ export default function UnitPanel({
 
   const cleanWhatsappNumber = whatsappNumber.replace(/\D/g, "");
 
-const whatsappUrl = `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage}`;
 
   const floorPlanUrl = unit.floorPlanImage?.asset?.url;
   const floorPlanPdfUrl = unit.floorPlanPdf?.asset?.url;
-  console.log("PDF URL:", unit.code, floorPlanPdfUrl);
+
+  function handleSwipeStart(event: React.TouchEvent<HTMLDivElement>) {
+    setSwipeStartY(event.touches[0]?.clientY ?? null);
+    setSwipeDistance(0);
+  }
+
+  function handleSwipeMove(event: React.TouchEvent<HTMLDivElement>) {
+    if (swipeStartY === null) {
+      return;
+    }
+
+    const currentY = event.touches[0]?.clientY;
+
+    if (currentY === undefined) {
+      return;
+    }
+
+    const distance = currentY - swipeStartY;
+
+    if (distance > 0) {
+      setSwipeDistance(distance);
+    }
+  }
+
+  function handleSwipeEnd() {
+    if (swipeDistance > 100) {
+      setShowLeadForm(false);
+      onClose();
+    }
+
+    setSwipeStartY(null);
+    setSwipeDistance(0);
+  }
+
+  function handleClose() {
+    setShowLeadForm(false);
+    onClose();
+  }
 
   return (
     <>
       <div
         className="fixed inset-0 z-40 bg-black/40"
         aria-hidden="true"
-        onClick={() => {
-          setShowLeadForm(false);
-          onClose();
-        }}
+        onClick={handleClose}
       />
 
       <aside
-        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="unit-panel-title"
-        className="fixed inset-x-0 bottom-0 z-50 max-h-[90vh] overflow-y-auto rounded-t-2xl bg-white shadow-2xl lg:inset-y-0 lg:right-0 lg:left-auto lg:w-[440px] lg:max-h-none lg:rounded-none lg:rounded-l-2xl"
+        className="
+          fixed inset-x-0 bottom-0 z-50
+          max-h-[90vh]
+          overflow-y-auto
+          rounded-t-2xl
+          bg-white
+          shadow-2xl
+          lg:inset-y-0
+          lg:right-0
+          lg:left-auto
+          lg:w-[440px]
+          lg:max-h-none
+          lg:rounded-none
+          lg:rounded-l-2xl
+        "
+        style={{
+          transform:
+            swipeDistance > 0
+              ? `translateY(${swipeDistance}px)`
+              : undefined,
+          transition:
+            swipeStartY === null
+              ? "transform 150ms ease-out"
+              : "none",
+        }}
       >
+        {/* Mobile drag handle */}
+        <div
+          className="
+            flex
+            justify-center
+            px-6
+            pb-2
+            pt-3
+            lg:hidden
+          "
+          onTouchStart={handleSwipeStart}
+          onTouchMove={handleSwipeMove}
+          onTouchEnd={handleSwipeEnd}
+        >
+          <div
+            className="h-1.5 w-12 rounded-full bg-gray-300"
+            aria-hidden="true"
+          />
+
+          <span className="sr-only">
+            Zvarrit poshtë për ta mbyllur
+          </span>
+        </div>
+
         <div className="p-6">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm text-gray-500">{floorLabel}</p>
+              <p className="text-sm text-gray-500">
+                {floorLabel}
+              </p>
 
               <h2
                 id="unit-panel-title"
@@ -124,9 +213,22 @@ const whatsappUrl = `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage
             <button
               ref={closeButtonRef}
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               aria-label="Mbyll"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xl text-gray-700 transition hover:bg-gray-200"
+              className="
+                flex h-11 w-11 shrink-0
+                items-center justify-center
+                rounded-full
+                bg-gray-100
+                text-xl
+                text-gray-700
+                transition
+                hover:bg-gray-200
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-2
+                focus-visible:outline-black
+              "
             >
               ×
             </button>
@@ -134,28 +236,40 @@ const whatsappUrl = `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage
 
           <div className="mb-6 grid grid-cols-2 gap-3">
             <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-xs text-gray-500">Dhoma</p>
+              <p className="text-xs text-gray-500">
+                Dhoma
+              </p>
+
               <p className="mt-1 font-semibold">
                 {unit.rooms ?? "-"}
               </p>
             </div>
 
             <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-xs text-gray-500">Neto</p>
+              <p className="text-xs text-gray-500">
+                Neto
+              </p>
+
               <p className="mt-1 font-semibold">
                 {unit.areaNet ?? "-"} m²
               </p>
             </div>
 
             <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-xs text-gray-500">Bruto</p>
+              <p className="text-xs text-gray-500">
+                Bruto
+              </p>
+
               <p className="mt-1 font-semibold">
                 {unit.areaGross ?? "-"} m²
               </p>
             </div>
 
             <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-xs text-gray-500">Orientimi</p>
+              <p className="text-xs text-gray-500">
+                Orientimi
+              </p>
+
               <p className="mt-1 font-semibold">
                 {unit.orientation?.length
                   ? unit.orientation.join(", ")
@@ -182,7 +296,15 @@ const whatsappUrl = `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage
 
               <button
                 type="button"
-                className="group relative block w-full overflow-hidden rounded-lg bg-gray-100"
+                className="
+                  group relative block w-full
+                  overflow-hidden rounded-lg
+                  bg-gray-100
+                  focus-visible:outline
+                  focus-visible:outline-2
+                  focus-visible:outline-offset-2
+                  focus-visible:outline-black
+                "
                 onClick={() => {
                   window.open(floorPlanUrl, "_blank");
                 }}
@@ -192,8 +314,12 @@ const whatsappUrl = `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage
                   alt={`Planimetria ${unit.code}`}
                   width={800}
                   height={600}
-                  sizes="440px"
-                  className="h-auto w-full transition-transform group-hover:scale-[1.02]"
+                  sizes="(max-width: 768px) 100vw, 440px"
+                  className="
+                    h-auto w-full
+                    transition-transform
+                    group-hover:scale-[1.02]
+                  "
                 />
 
                 <span className="absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1.5 text-xs text-white">
@@ -203,43 +329,89 @@ const whatsappUrl = `https://wa.me/${cleanWhatsappNumber}?text=${whatsappMessage
             </div>
           )}
 
-{showLeadForm ? (
-  <LeadForm
-  unitCode={unit.code ?? ""}
-  onClose={() => setShowLeadForm(false)}
-/>
-) : (
-  <div className="space-y-3">
-    <button
-      type="button"
-      onClick={() => {
-        setShowLeadForm(true);
-      }}
-      className="w-full rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
-    >
-      Interesohem
-    </button>
+          {showLeadForm ? (
+            <LeadForm
+              unitCode={unit.code ?? ""}
+              onClose={() => setShowLeadForm(false)}
+            />
+          ) : (
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLeadForm(true);
+                }}
+                className="
+                  min-h-11 w-full
+                  rounded-lg
+                  bg-black
+                  px-5 py-3
+                  text-sm
+                  font-semibold
+                  text-white
+                  transition
+                  hover:bg-gray-800
+                  focus-visible:outline
+                  focus-visible:outline-2
+                  focus-visible:outline-offset-2
+                  focus-visible:outline-black
+                "
+              >
+                Interesohem
+              </button>
 
-    <a
-      href={whatsappUrl}
-      target="_blank"
-      rel="noreferrer"
-      className="block w-full rounded-lg bg-green-600 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-green-700"
-    >
-      WhatsApp
-    </a>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="
+                  flex min-h-11 w-full
+                  items-center justify-center
+                  rounded-lg
+                  bg-green-600
+                  px-5 py-3
+                  text-center
+                  text-sm
+                  font-semibold
+                  text-white
+                  transition
+                  hover:bg-green-700
+                  focus-visible:outline
+                  focus-visible:outline-2
+                  focus-visible:outline-offset-2
+                  focus-visible:outline-green-700
+                "
+              >
+                WhatsApp
+              </a>
 
-    {floorPlanPdfUrl && (
-      <a
-      href={floorPlanPdfUrl}
-      download
-      className="block w-full rounded-lg border border-gray-300 px-5 py-3 text-center text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-    >
-      Shkarko planin
-    </a>
-    )}
-  </div>
-)}
+              {floorPlanPdfUrl && (
+                <a
+                  href={floorPlanPdfUrl}
+                  download
+                  className="
+                    flex min-h-11 w-full
+                    items-center justify-center
+                    rounded-lg
+                    border border-gray-300
+                    px-5 py-3
+                    text-center
+                    text-sm
+                    font-semibold
+                    text-gray-700
+                    transition
+                    hover:bg-gray-50
+                    focus-visible:outline
+                    focus-visible:outline-2
+                    focus-visible:outline-offset-2
+                    focus-visible:outline-black
+                  "
+                >
+                  Shkarko planin
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </aside>
     </>
