@@ -1,22 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  parseAsInteger,
-  parseAsString,
-  useQueryStates,
-} from "nuqs";
-
-import type {
-  BuildingBySlugQueryResult,
-  UnitsByBuildingQueryResult,
-} from "@/sanity.types";
-
+import { parseAsInteger, parseAsString, useQueryStates, } from "nuqs";
+import type { BuildingBySlugQueryResult, UnitsByBuildingQueryResult, } from "@/sanity.types";
 import FacadeOverlay from "./FacadeOverlay";
 import FloorPlan from "./FloorPlan";
 import UnitFilters from "./UnitFilters";
 import UnitPanel from "./UnitPanel";
-import { filterUnits } from "./unitFilters";
+import { filterUnits } from "./unitFilterUtils";
 
 type Building = NonNullable<BuildingBySlugQueryResult>;
 type Unit = UnitsByBuildingQueryResult[number];

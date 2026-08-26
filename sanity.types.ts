@@ -704,6 +704,64 @@ export type UnitsByBuildingQueryResult = Array<{
   price: number | null;
 }>;
 
+// Source: sanity/lib/queries.ts
+// Variable: unitByBuildingAndCodeQuery
+// Query: *[    _type == "unit" &&    building->slug.current == $buildingSlug &&    code == $unitCode  ][0] {    _id,    code,    floor,    unitType,    rooms,    areaNet,    areaGross,    orientation,    status,    svgPath,    floorPlanImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    floorPlanPdf {      asset->{        _id,        url,        originalFilename,        mimeType      }    },    price,    "building": building->{      _id,      title,      "slug": slug.current,      floorsCount    }  }
+export type UnitByBuildingAndCodeQueryResult = {
+  _id: string;
+  code: string | null;
+  floor: number | null;
+  unitType: "afarist" | "banesor" | null;
+  rooms: number | null;
+  areaNet: number | null;
+  areaGross: number | null;
+  orientation: Array<string> | null;
+  status: "i_lire" | "i_rezervuar" | "i_shitur" | null;
+  svgPath: string | null;
+  floorPlanImage: {
+    asset: {
+      _id: string;
+      url: string | null;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number | null;
+          height: number | null;
+          aspectRatio: number | null;
+        } | null;
+      } | null;
+    } | null;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  floorPlanPdf: {
+    asset: {
+      _id: string;
+      url: string | null;
+      originalFilename: string | null;
+      mimeType: string | null;
+    } | null;
+  } | null;
+  price: number | null;
+  building: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    floorsCount: number | null;
+  } | null;
+} | null;
+
+// Source: sanity/lib/queries.ts
+// Variable: allUnitsQuery
+// Query: *[_type == "unit"] {    _id,    code,    "buildingSlug": building->slug.current  }
+export type AllUnitsQueryResult = Array<{
+  _id: string;
+  code: string | null;
+  buildingSlug: string | null;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -716,5 +774,7 @@ declare module "@sanity/client" {
     '*[_type == "building"] | order(order asc) {\n  _id,\n  title,\n  "slug": slug.current,\n  facadeImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n  "total": count(*[_type == "unit" && building._ref == ^._id]),\n  "free": count(*[_type == "unit" && building._ref == ^._id && status == "i_lire"])\n}': AllBuildingsQueryResult;
     '\n  *[_type == "building" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    order,\n    facadeImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    facadeViewBox,\n    floorsCount\n  }\n': BuildingBySlugQueryResult;
     '\n  *[_type == "unit" && building._ref == $buildingId] {\n    _id,\n    code,\n    floor,\n    unitType,\n    rooms,\n    areaNet,\n    areaGross,\n    orientation,\n    status,\n    svgPath,\n    floorPlanImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    floorPlanPdf {\n  asset->{\n    _id,\n    url,\n    originalFilename,\n    mimeType\n  }\n},\n    price\n  }\n': UnitsByBuildingQueryResult;
+    '\n  *[\n    _type == "unit" &&\n    building->slug.current == $buildingSlug &&\n    code == $unitCode\n  ][0] {\n    _id,\n    code,\n    floor,\n    unitType,\n    rooms,\n    areaNet,\n    areaGross,\n    orientation,\n    status,\n    svgPath,\n    floorPlanImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    floorPlanPdf {\n      asset->{\n        _id,\n        url,\n        originalFilename,\n        mimeType\n      }\n    },\n    price,\n    "building": building->{\n      _id,\n      title,\n      "slug": slug.current,\n      floorsCount\n    }\n  }\n': UnitByBuildingAndCodeQueryResult;
+    '\n  *[_type == "unit"] {\n    _id,\n    code,\n    "buildingSlug": building->slug.current\n  }\n': AllUnitsQueryResult;
   }
 }

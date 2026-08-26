@@ -8,6 +8,8 @@ import type {
   AllBuildingsQueryResult,
   BuildingBySlugQueryResult,
 UnitsByBuildingQueryResult,
+UnitByBuildingAndCodeQueryResult,
+
 } from "../../sanity.types";
 import {
   allProjectsQuery,
@@ -18,6 +20,8 @@ import {
   allBuildingsQuery,
   buildingBySlugQuery,
   unitsByBuildingQuery,
+  unitByBuildingAndCodeQuery,
+  allUnitsQuery,
 } from "./queries";
 
 export const client = createClient({
@@ -67,3 +71,21 @@ export async function getUnitsByBuilding(
 ): Promise<UnitsByBuildingQueryResult> {
   return client.fetch(unitsByBuildingQuery, { buildingId });
 }
+
+export async function getUnitByBuildingAndCode(
+  buildingSlug: string,
+  unitCode: string,
+): Promise<UnitByBuildingAndCodeQueryResult> {
+  return client.fetch(unitByBuildingAndCodeQuery, {
+    buildingSlug,
+    unitCode,
+  });
+}
+
+
+import type { AllUnitsQueryResult } from "../../sanity.types";
+
+export async function getAllUnits(): Promise<AllUnitsQueryResult> {
+  return client.fetch(allUnitsQuery);
+}
+

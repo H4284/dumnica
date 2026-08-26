@@ -172,3 +172,46 @@ export const unitsByBuildingQuery = groq`
     price
   }
 `;
+
+export const unitByBuildingAndCodeQuery = groq`
+  *[
+    _type == "unit" &&
+    building->slug.current == $buildingSlug &&
+    code == $unitCode
+  ][0] {
+    _id,
+    code,
+    floor,
+    unitType,
+    rooms,
+    areaNet,
+    areaGross,
+    orientation,
+    status,
+    svgPath,
+    floorPlanImage ${imageWithMetadataProjection},
+    floorPlanPdf {
+      asset->{
+        _id,
+        url,
+        originalFilename,
+        mimeType
+      }
+    },
+    price,
+    "building": building->{
+      _id,
+      title,
+      "slug": slug.current,
+      floorsCount
+    }
+  }
+`;
+
+export const allUnitsQuery = groq`
+  *[_type == "unit"] {
+    _id,
+    code,
+    "buildingSlug": building->slug.current
+  }
+`;
