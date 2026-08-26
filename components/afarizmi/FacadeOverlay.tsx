@@ -19,6 +19,7 @@ type Props = {
   facadeViewBox: string;
   units: UnitsByBuildingQueryResult;
   selectedUnit?: Unit | null;
+  visibleUnitIds?: Set<string>;
   onSelectUnit?: (unit: Unit) => void;
   onUnitElementReady?: (
     unitId: string,
@@ -45,6 +46,7 @@ export default function FacadeOverlay({
   facadeViewBox,
   units,
   selectedUnit,
+  visibleUnitIds,
   onSelectUnit,
   onUnitElementReady,
 }: Props) {
@@ -72,6 +74,7 @@ export default function FacadeOverlay({
         <SvgOverlay
           viewBox={facadeViewBox}
           units={units}
+          visibleUnitIds={visibleUnitIds}
           selectedUnit={selectedUnit}
           onSelect={(unit) => {
             setHoveredUnit(null);

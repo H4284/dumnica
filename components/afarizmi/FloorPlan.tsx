@@ -2,12 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-
-import type {
-  BuildingBySlugQueryResult,
-  UnitsByBuildingQueryResult,
-} from "@/sanity.types";
-
+import type { BuildingBySlugQueryResult, UnitsByBuildingQueryResult, } from "@/sanity.types";
 import FloorSelector from "./FloorSelector";
 
 type Building = NonNullable<BuildingBySlugQueryResult>;
@@ -16,6 +11,7 @@ type Unit = UnitsByBuildingQueryResult[number];
 type Props = {
   building: Building;
   units: UnitsByBuildingQueryResult;
+  visibleUnitIds?: Set<string>;
   onSelectUnit?: (unit: Unit) => void;
   selectedUnit?: Unit | null;
 };
@@ -25,6 +21,7 @@ export default function FloorPlan({
   units,
   selectedUnit: _selectedUnit,
   onSelectUnit: _onSelectUnit,
+  visibleUnitIds,
 }: Props) {
   const [activeFloor, setActiveFloor] = useState(0);
   const [activePlanIndex, setActivePlanIndex] = useState(0);

@@ -9,6 +9,7 @@ type Unit = UnitsByBuildingQueryResult[number];
 type Props = {
   viewBox: string;
   units: UnitsByBuildingQueryResult;
+  visibleUnitIds?: Set<string>;
   selectedUnit?: Unit | null;
   onSelect?: (unit: Unit) => void;
   onUnitElementReady?: (unitId: string, element: SVGPathElement) => void;
@@ -49,6 +50,7 @@ function getStatusLabel(status: Unit["status"]) {
 export default function SvgOverlay({
   viewBox,
   units,
+  visibleUnitIds,
   selectedUnit,
   onSelect,
   onUnitElementReady,
@@ -68,44 +70,48 @@ export default function SvgOverlay({
           }
 
           const isSold = unit.status === "i_shitur";
+
           const isSelected = selectedUnit?._id === unit._id;
-          
+
+          const isVisible =
+            visibleUnitIds === undefined || visibleUnitIds.has(unit._id);
+
           return (
             <path
-            key={unit._id}
-            d={unit.svgPath}
-            ref={(element) => {
-              if (element) {
-                onUnitElementReady?.(unit._id, element);
-              }
-            }}
-            tabIndex={isSold ? -1 : 0}
-            className={`${
-              isSelected
-                ? "fill-blue-500/60"
-                : getStatusClass(unit.status)
-            } ${
-              isSold ? "cursor-default" : "cursor-pointer"
-            } stroke-white stroke-1 transition-colors`}
-            style={{
-              pointerEvents: "all",
-            }}
-            onMouseEnter={() => setHoveredUnit(unit)}
-            onMouseLeave={() => setHoveredUnit(null)}
-            onClick={() => {
-              if (isSold) return;
-          
-              onSelect?.(unit);
-            }}
-            onKeyDown={(event) => {
-              if (isSold) return;
-          
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
+              key={unit._id}
+              d={unit.svgPath}
+              ref={(element) => {
+                if (element) {
+                  onUnitElementReady?.(unit._id, element);
+                }
+              }}
+              className={`
+                ${
+                  isSelected
+                    ? "fill-blue-500/60"
+                    : getStatusClass(unit.status)
+                }
+                ${isSold ? "cursor-default" : "cursor-pointer"}
+                stroke-white stroke-1 transition-all
+                ${
+                  isVisible
+                    ? "opacity-100"
+                    : "opacity-20 grayscale"
+                }
+              `}
+              style={{
+                pointerEvents: isVisible && !isSold ? "all" : "none",
+              }}
+              onMouseEnter={() => setHoveredUnit(unit)}
+              onMouseLeave={() => setHoveredUnit(null)}
+              onClick={() => {
+                if (isSold || !isVisible) {
+                  return;
+                }
+
                 onSelect?.(unit);
-              }
-            }}
-          />
+              }}
+            />
           );
         })}
       </svg>
