@@ -108,6 +108,7 @@ export default function Gallery({ images, title }: GalleryProps) {
                     alt={`${title} ${index + 1}`}
                     width={600}
                     height={400}
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     loading="lazy"
                   />
                 </button>
@@ -137,6 +138,7 @@ export default function Gallery({ images, title }: GalleryProps) {
             alt={`${title} ${selectedIndex! + 1}`}
             width={1600}
             height={1000}
+            sizes="(max-width: 768px) 100vw, 1200px"
             priority
           />
 

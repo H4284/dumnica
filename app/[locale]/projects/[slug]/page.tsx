@@ -71,6 +71,7 @@ export default async function ProjectPage({
             alt={project.title || "Project"}
             width={1600}
             height={900}
+             sizes="(max-width: 768px) 100vw, 1600px"
             priority
           />
         </section>
