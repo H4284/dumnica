@@ -3,6 +3,7 @@ import FeaturedProjects from "@/components/home/FeaturedProjects";
 import Numbers from "@/components/home/Numbers";
 import About from "@/components/home/About";
 import Contact from "@/components/home/Contact";
+import HashRedirect from "@/components/redirects/HashRedirect"
 
 import {
   getAllProjects,
@@ -31,6 +32,7 @@ export default async function HomePage({
 
   return (
     <main>
+
       <Hero homePage={homePage} />
 
       <FeaturedProjects
@@ -43,6 +45,8 @@ export default async function HomePage({
       <About homePage={homePage} />
 
       <Contact siteSettings={siteSettings} />
+
+      <HashRedirect />
     </main>
   );
 }
