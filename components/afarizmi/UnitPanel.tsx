@@ -94,6 +94,36 @@ export default function UnitPanel({
 
   const floorPlanUrl = unit.floorPlanImage?.asset?.url;
   const floorPlanPdfUrl = unit.floorPlanPdf?.asset?.url;
+  const floorPlanDownloadUrl = floorPlanPdfUrl ?? floorPlanUrl;
+  const floorPlanDownloadName =
+    unit.floorPlanPdf?.asset?.originalFilename ??
+    `${unit.code ?? "planimetria"}.jpg`;
+
+  async function downloadFloorPlan() {
+    if (!floorPlanDownloadUrl) {
+      return;
+    }
+
+    try {
+      const response = await fetch(floorPlanDownloadUrl);
+
+      if (!response.ok) {
+        throw new Error("Download failed");
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = floorPlanDownloadName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch {
+      window.open(floorPlanDownloadUrl, "_blank", "noopener,noreferrer");
+    }
+  }
 
   function handleSwipeStart(event: React.TouchEvent<HTMLDivElement>) {
     setSwipeStartY(event.touches[0]?.clientY ?? null);
@@ -150,7 +180,8 @@ export default function UnitPanel({
           max-h-[90vh]
           overflow-y-auto
           rounded-t-2xl
-          bg-white
+          bg-surface
+          text-primary
           shadow-2xl
           lg:inset-y-0
           lg:right-0
@@ -198,13 +229,13 @@ export default function UnitPanel({
         <div className="p-6">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-secondary">
                 {floorLabel}
               </p>
 
               <h2
                 id="unit-panel-title"
-                className="mt-1 text-2xl font-bold"
+                className="mt-1 text-2xl font-bold text-primary"
               >
                 {unit.code}
               </h2>
@@ -235,42 +266,42 @@ export default function UnitPanel({
           </div>
 
           <div className="mb-6 grid grid-cols-2 gap-3">
-            <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-xs text-gray-500">
+            <div className="rounded-lg bg-muted p-3">
+              <p className="text-xs text-secondary">
                 Dhoma
               </p>
 
-              <p className="mt-1 font-semibold">
+              <p className="mt-1 font-semibold text-primary">
                 {unit.rooms ?? "-"}
               </p>
             </div>
 
-            <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-xs text-gray-500">
+            <div className="rounded-lg bg-muted p-3">
+              <p className="text-xs text-secondary">
                 Neto
               </p>
 
-              <p className="mt-1 font-semibold">
+              <p className="mt-1 font-semibold text-primary">
                 {unit.areaNet ?? "-"} m²
               </p>
             </div>
 
-            <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-xs text-gray-500">
+            <div className="rounded-lg bg-muted p-3">
+              <p className="text-xs text-secondary">
                 Bruto
               </p>
 
-              <p className="mt-1 font-semibold">
+              <p className="mt-1 font-semibold text-primary">
                 {unit.areaGross ?? "-"} m²
               </p>
             </div>
 
-            <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-xs text-gray-500">
+            <div className="rounded-lg bg-muted p-3">
+              <p className="text-xs text-secondary">
                 Orientimi
               </p>
 
-              <p className="mt-1 font-semibold">
+              <p className="mt-1 font-semibold text-primary">
                 {unit.orientation?.length
                   ? unit.orientation.join(", ")
                   : "-"}
@@ -290,7 +321,7 @@ export default function UnitPanel({
 
           {floorPlanUrl && (
             <div className="mb-6">
-              <p className="mb-2 text-sm font-medium text-gray-700">
+              <p className="mb-2 text-sm font-medium text-primary">
                 Planimetria
               </p>
 
@@ -385,22 +416,25 @@ export default function UnitPanel({
                 WhatsApp
               </a>
 
-              {floorPlanPdfUrl && (
-                <a
-                  href={floorPlanPdfUrl}
-                  download
+              {floorPlanDownloadUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void downloadFloorPlan();
+                  }}
                   className="
                     flex min-h-11 w-full
                     items-center justify-center
                     rounded-lg
-                    border border-gray-300
+                    border border-border
+                    bg-surface
                     px-5 py-3
                     text-center
                     text-sm
                     font-semibold
-                    text-gray-700
+                    text-primary
                     transition
-                    hover:bg-gray-50
+                    hover:bg-muted
                     focus-visible:outline
                     focus-visible:outline-2
                     focus-visible:outline-offset-2
@@ -408,7 +442,7 @@ export default function UnitPanel({
                   "
                 >
                   Shkarko planin
-                </a>
+                </button>
               )}
             </div>
           )}

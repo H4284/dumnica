@@ -48,11 +48,16 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+html {
+  color-scheme: light;
+}
+
+input,
+select,
+textarea,
+button {
+  color-scheme: light;
 }
 
 body {
@@ -120,6 +125,11 @@ main {
     border: none;
     font-size: 28px;
     cursor: pointer;
+    color: var(--color-primary);
+  }
+
+  .mobile-menu-button[aria-expanded="true"] {
+    color: var(--color-dark-text);
   }
 
   .mobile-menu {
@@ -129,7 +139,8 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    background: var(--color-dark-surface);
+    color: var(--color-dark-text);
   }
 
   .mobile-menu nav {
@@ -137,6 +148,11 @@ main {
     flex-direction: column;
     align-items: center;
     gap: 24px;
+  }
+
+  .mobile-menu a,
+  .mobile-menu button {
+    color: var(--color-dark-text);
   }
 }
 .header-actions {

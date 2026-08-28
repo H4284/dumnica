@@ -167,31 +167,31 @@ export default async function UnitPage({ params }: Props) {
         }}
       />
 
-      <header className="mb-10">
-        <p className="mb-2 text-sm text-gray-500">
+      <header className="mb-10 text-primary">
+        <p className="mb-2 text-sm text-secondary">
           {buildingTitle}
         </p>
 
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-bold text-primary">
           Njësia {unitCode}
         </h1>
 
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-primary">
           {statusLabel}
         </p>
       </header>
 
-      <section className="grid gap-6 rounded-xl border bg-white p-6 sm:grid-cols-2">
+      <section className="grid gap-6 rounded-xl border border-border bg-surface p-6 text-primary sm:grid-cols-2">
         <div>
-          <h2 className="text-sm text-gray-500">Dhoma</h2>
-          <p className="text-xl font-semibold">
+          <h2 className="text-sm text-secondary">Dhoma</h2>
+          <p className="text-xl font-semibold text-primary">
             {currentUnit.rooms ?? "—"}
           </p>
         </div>
 
         <div>
-          <h2 className="text-sm text-gray-500">Sipërfaqe neto</h2>
-          <p className="text-xl font-semibold">
+          <h2 className="text-sm text-secondary">Sipërfaqe neto</h2>
+          <p className="text-xl font-semibold text-primary">
             {currentUnit.areaNet
               ? `${currentUnit.areaNet} m²`
               : "—"}
@@ -199,8 +199,8 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-gray-500">Sipërfaqe bruto</h2>
-          <p className="text-xl font-semibold">
+          <h2 className="text-sm text-secondary">Sipërfaqe bruto</h2>
+          <p className="text-xl font-semibold text-primary">
             {currentUnit.areaGross
               ? `${currentUnit.areaGross} m²`
               : "—"}
@@ -208,13 +208,13 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-gray-500">Kati</h2>
-          <p className="text-xl font-semibold">{floorLabel}</p>
+          <h2 className="text-sm text-secondary">Kati</h2>
+          <p className="text-xl font-semibold text-primary">{floorLabel}</p>
         </div>
 
         <div>
-          <h2 className="text-sm text-gray-500">Orientimi</h2>
-          <p className="text-xl font-semibold">
+          <h2 className="text-sm text-secondary">Orientimi</h2>
+          <p className="text-xl font-semibold text-primary">
             {currentUnit.orientation?.length
               ? currentUnit.orientation.join(", ")
               : "—"}
@@ -222,8 +222,8 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-gray-500">Tipi</h2>
-          <p className="text-xl font-semibold">
+          <h2 className="text-sm text-secondary">Tipi</h2>
+          <p className="text-xl font-semibold text-primary">
             {currentUnit.unitType === "banesor"
               ? "Banesor"
               : currentUnit.unitType === "afarist"

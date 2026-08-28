@@ -59,7 +59,9 @@ export async function submitLead(data: {
   }
 
   // 2. Check Resend configuration
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const salesEmail =
+    process.env.SALES_EMAIL?.trim() || "havajusufi05@gmail.com";
 
   if (!apiKey) {
     console.error("RESEND_API_KEY is missing.");
@@ -94,7 +96,7 @@ export async function submitLead(data: {
       await resend.emails.send(
         {
           from: "Dumnica <onboarding@resend.dev>",
-          to: ["havajusufi05@gmail.com"],
+          to: [salesEmail],
           replyTo: email || undefined,
           subject: `Interesim për njësinë ${unitCode}`,
           html: `

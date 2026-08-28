@@ -3,7 +3,6 @@
 import {
   parseAsInteger,
   parseAsString,
-  useQueryState,
   useQueryStates,
 } from "nuqs";
 
@@ -36,11 +35,11 @@ export default function UnitFilters({ floorsCount }: Props) {
   }
 
   return (
-    <section className="mb-8 rounded-xl border bg-white p-5 shadow-sm">
+    <section className="mb-8 rounded-xl border border-border bg-surface p-5 text-primary shadow-sm">
       <div className="mb-5 flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Filtro njësitë</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-lg font-semibold text-primary">Filtro njësitë</h2>
+          <p className="text-sm text-secondary">
             Zgjidh kriteret për të gjetur njësinë.
           </p>
         </div>
@@ -48,7 +47,7 @@ export default function UnitFilters({ floorsCount }: Props) {
         <button
           type="button"
           onClick={clearFilters}
-          className="text-sm font-medium text-gray-600 underline hover:text-black"
+          className="text-sm font-medium text-primary underline hover:text-secondary"
         >
           Pastro filtrat
         </button>
@@ -56,7 +55,7 @@ export default function UnitFilters({ floorsCount }: Props) {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Kati */}
-        <label className="flex flex-col gap-2">
+        <label className="flex flex-col gap-2 text-primary">
           <span className="text-sm font-medium">Kati</span>
 
           <select
@@ -69,7 +68,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                     : Number(event.target.value),
               })
             }
-            className="rounded-lg border px-3 py-2"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
           >
             <option value="">Të gjitha katet</option>
 
@@ -82,7 +81,7 @@ export default function UnitFilters({ floorsCount }: Props) {
         </label>
 
         {/* Dhoma */}
-        <label className="flex flex-col gap-2">
+        <label className="flex flex-col gap-2 text-primary">
           <span className="text-sm font-medium">Dhoma</span>
 
           <select
@@ -95,7 +94,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                     : Number(event.target.value),
               })
             }
-            className="rounded-lg border px-3 py-2"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
           >
             <option value="">Të gjitha</option>
             <option value="1">1 dhomë</option>
@@ -107,7 +106,7 @@ export default function UnitFilters({ floorsCount }: Props) {
         </label>
 
         {/* Minimum m² */}
-        <label className="flex flex-col gap-2">
+        <label className="flex flex-col gap-2 text-primary">
           <span className="text-sm font-medium">Min. m²</span>
 
           <input
@@ -123,12 +122,12 @@ export default function UnitFilters({ floorsCount }: Props) {
               })
             }
             placeholder="p.sh. 50"
-            className="rounded-lg border px-3 py-2"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary placeholder:text-secondary"
           />
         </label>
 
         {/* Maximum m² */}
-        <label className="flex flex-col gap-2">
+        <label className="flex flex-col gap-2 text-primary">
           <span className="text-sm font-medium">Max. m²</span>
 
           <input
@@ -144,12 +143,12 @@ export default function UnitFilters({ floorsCount }: Props) {
               })
             }
             placeholder="p.sh. 120"
-            className="rounded-lg border px-3 py-2"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary placeholder:text-secondary"
           />
         </label>
 
         {/* Orientimi */}
-        <label className="flex flex-col gap-2">
+        <label className="flex flex-col gap-2 text-primary">
           <span className="text-sm font-medium">
             Orientimi
           </span>
@@ -164,7 +163,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                     : event.target.value,
               });
             }}
-            className="rounded-lg border px-3 py-2"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
           >
             <option value="">
               Të gjitha
@@ -189,7 +188,7 @@ export default function UnitFilters({ floorsCount }: Props) {
         </label>
 
         {/* Status */}
-        <label className="flex flex-col gap-2">
+        <label className="flex flex-col gap-2 text-primary">
           <span className="text-sm font-medium">Statusi</span>
 
           <select
@@ -199,7 +198,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                 status: event.target.value,
               })
             }
-            className="rounded-lg border px-3 py-2"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
           >
             <option value="i_lire">Vetëm të lira</option>
             <option value="i_rezervuar">Të rezervuara</option>
@@ -209,7 +208,7 @@ export default function UnitFilters({ floorsCount }: Props) {
         </label>
 
         {/* Tipi */}
-        <label className="flex flex-col gap-2">
+        <label className="flex flex-col gap-2 text-primary">
           <span className="text-sm font-medium">Tipi</span>
 
           <select
@@ -219,7 +218,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                 type: event.target.value === "" ? null : event.target.value,
               })
             }
-            className="rounded-lg border px-3 py-2"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
           >
             <option value="">Të gjitha</option>
             <option value="banesor">Banesor</option>
@@ -228,7 +227,7 @@ export default function UnitFilters({ floorsCount }: Props) {
         </label>
       </div>
 
-      <div className="mt-4 text-sm text-gray-500">
+      <div className="mt-4 text-sm text-secondary">
         URL filters:
         <span className="ml-2 font-mono">
           {floor !== null ? `floor=${floor} ` : ""}

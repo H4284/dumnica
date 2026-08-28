@@ -115,11 +115,11 @@ export default function LeadForm({ unitCode, onClose }: Props) {
       noValidate
     >
       <div className="mb-2">
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-lg font-semibold text-primary">
           Interesohem për {unitCode}
         </h3>
 
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-secondary">
           Plotësoni të dhënat tuaja dhe do t&apos;ju kontaktojmë.
         </p>
       </div>
@@ -127,7 +127,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
       <div>
         <label
           htmlFor="lead-name"
-          className="mb-1.5 block text-sm font-medium text-gray-700"
+          className="mb-1.5 block text-sm font-medium text-primary"
         >
           Emri
         </label>
@@ -140,7 +140,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           onChange={handleChange}
           required
           autoComplete="name"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-black"
+          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
           placeholder="Emri dhe mbiemri"
         />
       </div>
@@ -148,7 +148,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
       <div>
         <label
           htmlFor="lead-phone"
-          className="mb-1.5 block text-sm font-medium text-gray-700"
+          className="mb-1.5 block text-sm font-medium text-primary"
         >
           Telefoni
         </label>
@@ -161,7 +161,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           onChange={handleChange}
           required
           autoComplete="tel"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-black"
+          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
           placeholder="+383 44 123 456"
         />
       </div>
@@ -169,10 +169,10 @@ export default function LeadForm({ unitCode, onClose }: Props) {
       <div>
         <label
           htmlFor="lead-email"
-          className="mb-1.5 block text-sm font-medium text-gray-700"
+          className="mb-1.5 block text-sm font-medium text-primary"
         >
           Email{" "}
-          <span className="text-gray-400">(opsionale)</span>
+          <span className="text-secondary">(opsionale)</span>
         </label>
 
         <input
@@ -182,7 +182,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           value={form.email}
           onChange={handleChange}
           autoComplete="email"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-black"
+          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
           placeholder="email@example.com"
         />
       </div>
@@ -190,7 +190,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
       <div>
         <label
           htmlFor="lead-message"
-          className="mb-1.5 block text-sm font-medium text-gray-700"
+          className="mb-1.5 block text-sm font-medium text-primary"
         >
           Mesazhi
         </label>
@@ -201,7 +201,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           value={form.message}
           onChange={handleChange}
           rows={4}
-          className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2.5 outline-none transition focus:border-black"
+          className="w-full resize-none rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
         />
       </div>
 
