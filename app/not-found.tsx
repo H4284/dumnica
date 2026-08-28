@@ -1,19 +1,16 @@
 import Link from "next/link";
 
-export default function NotFound() {
+export default function RootNotFound() {
   return (
-    <main>
-      <h1>404</h1>
-      <h2>Faqja nuk u gjet</h2>
-
-      <p>
-        Na vjen keq, por faqja që po kërkon nuk ekziston.
-      </p>
-
-      <div>
-        <Link href="/projects">Projects</Link>
-        <Link href="/afarizmi">Afarizmi</Link>
-      </div>
-    </main>
+    <html lang="sq">
+      <body>
+        <main>
+          <h1>404</h1>
+          <p>
+            <Link href="/">Dumnica</Link>
+          </p>
+        </main>
+      </body>
+    </html>
   );
 }

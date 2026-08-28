@@ -2,32 +2,31 @@
 
 import { z } from "zod";
 import { Resend } from "resend";
+import { getTranslations } from "next-intl/server";
+import { hasLocale } from "next-intl";
 
-const leadSchema = z.object({
-  unitCode: z.string().trim().min(1, "Kodi i njësisë mungon."),
+import { routing } from "@/i18n/routing";
 
-  name: z
-    .string()
-    .trim()
-    .min(2, "Ju lutem shkruani emrin tuaj."),
-
-  phone: z
-    .string()
-    .trim()
-    .min(8, "Ju lutem shkruani një numër telefoni."),
-
-  email: z
-    .string()
-    .trim()
-    .email("Email-i nuk është valid.")
-    .optional()
-    .or(z.literal("")),
-
-  message: z
-    .string()
-    .trim()
-    .min(5, "Mesazhi është shumë i shkurtër."),
-});
+function leadSchema(t: {
+  missingCode: string;
+  nameRequired: string;
+  phoneRequired: string;
+  emailInvalid: string;
+  messageShort: string;
+}) {
+  return z.object({
+    unitCode: z.string().trim().min(1, t.missingCode),
+    name: z.string().trim().min(2, t.nameRequired),
+    phone: z.string().trim().min(8, t.phoneRequired),
+    email: z
+      .string()
+      .trim()
+      .email(t.emailInvalid)
+      .optional()
+      .or(z.literal("")),
+    message: z.string().trim().min(5, t.messageShort),
+  });
+}
 
 export type LeadFormState = {
   success: boolean;
@@ -46,14 +45,25 @@ export async function submitLead(data: {
   phone: string;
   email: string;
   message: string;
+  locale?: string;
 }): Promise<LeadFormState> {
-  // 1. Validate on the server
-  const result = leadSchema.safeParse(data);
+  const locale = hasLocale(routing.locales, data.locale)
+    ? data.locale
+    : routing.defaultLocale;
+
+  const t = await getTranslations({ locale, namespace: "lead" });
+  const result = leadSchema({
+    missingCode: t("missingCode"),
+    nameRequired: t("nameRequired"),
+    phoneRequired: t("phoneRequired"),
+    emailInvalid: t("emailInvalid"),
+    messageShort: t("messageShort"),
+  }).safeParse(data);
 
   if (!result.success) {
     return {
       success: false,
-      message: "Ju lutem kontrolloni të dhënat e plotësuara.",
+      message: t("checkFields"),
       fieldErrors: result.error.flatten().fieldErrors,
     };
   }
@@ -68,7 +78,7 @@ export async function submitLead(data: {
 
     return {
       success: false,
-      message: "Shërbimi i email-it nuk është konfiguruar.",
+      message: t("notConfigured"),
     };
   }
 
@@ -140,8 +150,7 @@ export async function submitLead(data: {
 
       return {
         success: false,
-        message:
-          "Nuk mundëm ta dërgojmë kërkesën. Ju lutem provoni përsëri.",
+        message: t("sendFailed"),
       };
     }
 
@@ -212,15 +221,14 @@ export async function submitLead(data: {
     // 5. Everything required succeeded
     return {
       success: true,
-      message: "Kërkesa u dërgua me sukses.",
+      message: t("success", { code: unitCode }),
     };
   } catch (error) {
     console.error("Lead submission error:", error);
 
     return {
       success: false,
-      message:
-        "Diçka shkoi keq. Ju lutem provoni përsëri.",
+      message: t("genericError"),
     };
   }
 }

@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+
+import { useRouter } from "@/i18n/navigation";
 
 const hashMap: Record<string, string> = {
-  "#/": "/en",
-  "#/afarizmi/A1": "/en/afarizmi",
-  "#/projects": "/en/projects",
-  "#/afarizmi/page/99":
-    "/en/afarizmi/dumnica-residence?njesia=A-3-12",
+  "#/": "/",
+  "#/afarizmi/A1": "/afarizmi",
+  "#/projects": "/projects",
+  "#/afarizmi/page/99": "/afarizmi/dumnica-residence?njesia=A-3-12",
 };
 
 export default function HashRedirect() {
@@ -16,15 +16,16 @@ export default function HashRedirect() {
 
   useEffect(() => {
     const hash = window.location.hash;
-
-    console.log("Old hash:", hash);
-
     const target = hashMap[hash];
 
-    if (target) {
-      console.log("Redirecting to:", target);
-      router.replace(target);
+    if (!target) {
+      return;
     }
+
+    const [pathname, query] = target.split("?");
+    router.replace(
+      query ? `${pathname}?${query}` : pathname,
+    );
   }, [router]);
 
   return null;

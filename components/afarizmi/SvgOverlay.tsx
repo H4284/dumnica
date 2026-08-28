@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import type { UnitsByBuildingQueryResult } from "@/sanity.types";
+import { unitStatusKey } from "@/lib/statusKeys";
 
 type Unit = UnitsByBuildingQueryResult[number];
 
@@ -31,31 +33,6 @@ function getStatusClass(status: Unit["status"]) {
   }
 }
 
-function getStatusLabel(status: Unit["status"]) {
-  switch (status) {
-    case "i_lire":
-      return "I lirë";
-    case "i_rezervuar":
-      return "I rezervuar";
-    case "i_shitur":
-      return "I shitur";
-    default:
-      return "Pa status";
-  }
-}
-
-function getUnitAriaLabel(unit: Unit) {
-  const rooms = unit.rooms
-    ? `${unit.rooms} dhoma`
-    : "Numri i dhomave nuk është i përcaktuar";
-
-  const area = unit.areaNet
-    ? `${unit.areaNet} metra katror`
-    : "Sipërfaqja nuk është e përcaktuar";
-
-  return `Njësia ${unit.code ?? "pa kod"}, ${rooms}, ${area}, ${getStatusLabel(unit.status).toLowerCase()}`;
-}
-
 export default function SvgOverlay({
   viewBox,
   units,
@@ -64,7 +41,26 @@ export default function SvgOverlay({
   onSelect,
   onUnitElementReady,
 }: Props) {
+  const t = useTranslations("afarizmi");
+  const tStatus = useTranslations("unitStatus");
   const [previewedUnit, setPreviewedUnit] = useState<Unit | null>(null);
+
+  function getUnitAriaLabel(unit: Unit) {
+    const rooms = unit.rooms
+      ? t("roomsShort", { count: unit.rooms })
+      : t("roomsUndefined");
+
+    const area = unit.areaNet
+      ? `${unit.areaNet} m²`
+      : t("areaUndefined");
+
+    return t("unitAria", {
+      code: unit.code ?? t("noCode"),
+      rooms,
+      area,
+      status: tStatus(unitStatusKey(unit.status)),
+    });
+  }
 
   function handleUnitSelect(unit: Unit) {
     if (unit.status === "i_shitur") {
@@ -102,7 +98,7 @@ export default function SvgOverlay({
         viewBox={viewBox}
         className="absolute inset-0 h-full w-full"
         preserveAspectRatio="none"
-        aria-label="Zgjedhësi i njësive"
+        aria-label={t("selectorLabel")}
       >
         {units.map((unit) => {
           if (!unit.svgPath) {
@@ -182,19 +178,19 @@ export default function SvgOverlay({
           aria-live="polite"
         >
           <p className="font-semibold">
-            {previewedUnit.code ?? "Njësi"}
+            {previewedUnit.code ?? t("unit")}
           </p>
 
           <p>
-            {previewedUnit.rooms ?? "-"} dhoma ·{" "}
-            {previewedUnit.areaNet ?? "-"} m²
+            {previewedUnit.rooms != null
+              ? t("roomsShort", { count: previewedUnit.rooms })
+              : "—"}{" "}
+            · {previewedUnit.areaNet ?? "-"} m²
           </p>
 
-          <p>{getStatusLabel(previewedUnit.status)}</p>
+          <p>{tStatus(unitStatusKey(previewedUnit.status))}</p>
 
-          <p className="mt-1 text-xs text-white/70">
-            Preke përsëri për ta hapur
-          </p>
+          <p className="mt-1 text-xs text-white/70">{t("tapAgain")}</p>
         </div>
       )}
     </>

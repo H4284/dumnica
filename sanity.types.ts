@@ -96,7 +96,7 @@ export type Building = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
+  title?: LocaleString;
   slug?: Slug;
   project?: ProjectReference;
   facadeImage?: {
@@ -117,13 +117,20 @@ export type Slug = {
   source?: string;
 };
 
+export type LocaleString = {
+  _type: "localeString";
+  sq?: string;
+  en?: string;
+  de?: string;
+};
+
 export type HomePage = {
   _id: string;
   _type: "homePage";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  heroTitle?: string;
+  heroTitle?: LocaleString;
   heroImage?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -131,13 +138,13 @@ export type HomePage = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-  heroButtonText?: string;
+  heroButtonText?: LocaleString;
   heroButtonLink?: string;
   yearsOfExperience?: number;
   finishedProjects?: number;
   apartmentsDelivered?: number;
-  aboutTitle?: string;
-  aboutText?: string;
+  aboutTitle?: LocaleString;
+  aboutText?: LocaleText;
   aboutImage?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -145,7 +152,14 @@ export type HomePage = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-  afarizmiIntro?: string;
+  afarizmiIntro?: LocaleText;
+};
+
+export type LocaleText = {
+  _type: "localeText";
+  sq?: string;
+  en?: string;
+  de?: string;
 };
 
 export type SiteSettings = {
@@ -178,9 +192,23 @@ export type Page = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
+  title?: LocaleString;
   slug?: Slug;
-  body?: Array<{
+  body?: LocaleBlock;
+  seoTitle?: LocaleString;
+  seoDescription?: LocaleText;
+  seoImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+};
+
+export type LocaleBlock = {
+  _type: "localeBlock";
+  sq?: Array<{
     children?: Array<{
       marks?: Array<string>;
       text?: string;
@@ -198,15 +226,42 @@ export type Page = {
     _type: "block";
     _key: string;
   }>;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
+  en?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+  de?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
 };
 
 export type Project = {
@@ -215,9 +270,9 @@ export type Project = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
+  title?: LocaleString;
   slug?: Slug;
-  city?: string;
+  city?: LocaleString;
   status?: "construction" | "finished" | "coming-soon";
   mainPhoto?: {
     asset?: SanityImageAssetReference;
@@ -227,9 +282,17 @@ export type Project = {
     _type: "image";
   };
   video?: string;
-  description?: string;
-  specifications?: Array<string>;
-  amenities?: Array<string>;
+  description?: LocaleText;
+  specifications?: Array<
+    {
+      _key: string;
+    } & LocaleString
+  >;
+  amenities?: Array<
+    {
+      _key: string;
+    } & LocaleString
+  >;
   location?: Geopoint;
   brochure?: {
     asset?: SanityFileAssetReference;
@@ -247,7 +310,7 @@ export type Project = {
   finishDate?: string;
   featured?: boolean;
   paymentPlan?: Array<{
-    label?: string;
+    label?: LocaleString;
     percentage?: number;
     _key: string;
   }>;
@@ -360,9 +423,12 @@ export type AllSanitySchemaTypes =
   | ProjectReference
   | Building
   | Slug
+  | LocaleString
   | HomePage
+  | LocaleText
   | SiteSettings
   | Page
+  | LocaleBlock
   | Project
   | Geopoint
   | SanityImagePaletteSwatch
@@ -375,13 +441,14 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/lib/queries.ts
 // Variable: allProjectsQuery
-// Query: *[_type == "project"] | order(title asc) {    id,    _createdAt,    title,    slug,    city,    status,    mainPhoto {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    description,    featured  }
+// Query: *[_type == "project"] | order(select(    $locale == "en" => coalesce(title.en, title.sq),    $locale == "de" => coalesce(title.de, title.sq),    title.sq  ) asc) {    id,    _createdAt,    "title": select(    $locale == "en" => coalesce(title.en, title.sq),    $locale == "de" => coalesce(title.de, title.sq),    title.sq  ),    slug,    "city": select(    $locale == "en" => coalesce(city.en, city.sq),    $locale == "de" => coalesce(city.de, city.sq),    city.sq  ),    "cityKey": coalesce(city.sq, city.en, city.de),    status,    mainPhoto {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    "description": select(    $locale == "en" => coalesce(description.en, description.sq),    $locale == "de" => coalesce(description.de, description.sq),    description.sq  ),    featured  }
 export type AllProjectsQueryResult = Array<{
   id: null;
   _createdAt: string;
   title: string | null;
   slug: Slug | null;
   city: string | null;
+  cityKey: string | null;
   status: "coming-soon" | "construction" | "finished" | null;
   mainPhoto: {
     asset: {
@@ -407,11 +474,12 @@ export type AllProjectsQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: projectBySlugQuery
-// Query: *[_type == "project" && slug.current == $slug][0] {    title,    slug,    city,    status,    mainPhoto {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    video,    description,    specifications,    amenities,    paymentPlan,    location,    brochure {  asset->{    _id,    url,    originalFilename,    mimeType  }},    gallery[] {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    finishDate,    featured  }
+// Query: *[_type == "project" && slug.current == $slug][0] {    "title": select(    $locale == "en" => coalesce(title.en, title.sq),    $locale == "de" => coalesce(title.de, title.sq),    title.sq  ),    slug,    "city": select(    $locale == "en" => coalesce(city.en, city.sq),    $locale == "de" => coalesce(city.de, city.sq),    city.sq  ),    "cityKey": coalesce(city.sq, city.en, city.de),    status,    mainPhoto {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    video,    "description": select(    $locale == "en" => coalesce(description.en, description.sq),    $locale == "de" => coalesce(description.de, description.sq),    description.sq  ),    "specifications": specifications[]{    "v": select(      $locale == "en" => coalesce(@.en, @.sq),      $locale == "de" => coalesce(@.de, @.sq),      @.sq    )  }.v,    "amenities": amenities[]{    "v": select(      $locale == "en" => coalesce(@.en, @.sq),      $locale == "de" => coalesce(@.de, @.sq),      @.sq    )  }.v,    paymentPlan[] {      percentage,      "label": select(    $locale == "en" => coalesce(label.en, label.sq),    $locale == "de" => coalesce(label.de, label.sq),    label.sq  )    },    location,    brochure {  asset->{    _id,    url,    originalFilename,    mimeType  }},    gallery[] {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    finishDate,    featured  }
 export type ProjectBySlugQueryResult = {
   title: string | null;
   slug: Slug | null;
   city: string | null;
+  cityKey: string | null;
   status: "coming-soon" | "construction" | "finished" | null;
   mainPhoto: {
     asset: {
@@ -433,12 +501,11 @@ export type ProjectBySlugQueryResult = {
   } | null;
   video: string | null;
   description: string | null;
-  specifications: Array<string> | null;
-  amenities: Array<string> | null;
+  specifications: Array<string | null> | null;
+  amenities: Array<string | null> | null;
   paymentPlan: Array<{
-    label?: string;
-    percentage?: number;
-    _key: string;
+    percentage: number | null;
+    label: string | null;
   }> | null;
   location: Geopoint | null;
   brochure: {
@@ -507,7 +574,7 @@ export type SiteSettingsQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: pageBySlugQuery
-// Query: *[    _type == "page" &&    slug.current == $slug &&    language == $language  ][0] {    title,    slug,    body,    seoTitle,    seoDescription,    seoImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }}  }
+// Query: *[    _type == "page" &&    slug.current == $slug  ][0] {    "title": select(    $locale == "en" => coalesce(title.en, title.sq),    $locale == "de" => coalesce(title.de, title.sq),    title.sq  ),    slug,    "body": select(    $locale == "en" => coalesce(body.en, body.sq),    $locale == "de" => coalesce(body.de, body.sq),    body.sq  ),    "seoTitle": select(    $locale == "en" => coalesce(seoTitle.en, seoTitle.sq),    $locale == "de" => coalesce(seoTitle.de, seoTitle.sq),    seoTitle.sq  ),    "seoDescription": select(    $locale == "en" => coalesce(seoDescription.en, seoDescription.sq),    $locale == "de" => coalesce(seoDescription.de, seoDescription.sq),    seoDescription.sq  ),    seoImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }}  }
 export type PageBySlugQueryResult = {
   title: string | null;
   slug: Slug | null;
@@ -553,7 +620,7 @@ export type PageBySlugQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: homePageQuery
-// Query: *[_type == "homePage"][0] {    heroTitle,    heroImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    },    heroButtonText,    heroButtonLink,    yearsOfExperience,    finishedProjects,    apartmentsDelivered,    aboutTitle,    aboutText,    afarizmiIntro,    aboutImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    }  }
+// Query: *[_type == "homePage"][0] {    "heroTitle": select(    $locale == "en" => coalesce(heroTitle.en, heroTitle.sq),    $locale == "de" => coalesce(heroTitle.de, heroTitle.sq),    heroTitle.sq  ),    heroImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    },    "heroButtonText": select(    $locale == "en" => coalesce(heroButtonText.en, heroButtonText.sq),    $locale == "de" => coalesce(heroButtonText.de, heroButtonText.sq),    heroButtonText.sq  ),    heroButtonLink,    yearsOfExperience,    finishedProjects,    apartmentsDelivered,    "aboutTitle": select(    $locale == "en" => coalesce(aboutTitle.en, aboutTitle.sq),    $locale == "de" => coalesce(aboutTitle.de, aboutTitle.sq),    aboutTitle.sq  ),    "aboutText": select(    $locale == "en" => coalesce(aboutText.en, aboutText.sq),    $locale == "de" => coalesce(aboutText.de, aboutText.sq),    aboutText.sq  ),    "afarizmiIntro": select(    $locale == "en" => coalesce(afarizmiIntro.en, afarizmiIntro.sq),    $locale == "de" => coalesce(afarizmiIntro.de, afarizmiIntro.sq),    afarizmiIntro.sq  ),    aboutImage {      ...,      asset->{  _id,  url,  metadata {    lqip,    dimensions {      width,      height,      aspectRatio    }  }}    }  }
 export type HomePageQueryResult = {
   heroTitle: string | null;
   heroImage: {
@@ -604,7 +671,7 @@ export type HomePageQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: allBuildingsQuery
-// Query: *[_type == "building"] | order(order asc) {  _id,  title,  "slug": slug.current,  facadeImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},  "total": count(*[_type == "unit" && building._ref == ^._id]),  "free": count(*[_type == "unit" && building._ref == ^._id && status == "i_lire"])}
+// Query: *[_type == "building"] | order(order asc) {  _id,  "title": select(    $locale == "en" => coalesce(title.en, title.sq),    $locale == "de" => coalesce(title.de, title.sq),    title.sq  ),  "slug": slug.current,  facadeImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},  "total": count(*[_type == "unit" && building._ref == ^._id]),  "free": count(*[_type == "unit" && building._ref == ^._id && status == "i_lire"])}
 export type AllBuildingsQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -633,7 +700,7 @@ export type AllBuildingsQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: buildingBySlugQuery
-// Query: *[_type == "building" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    order,    facadeImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    facadeViewBox,    floorsCount  }
+// Query: *[_type == "building" && slug.current == $slug][0] {    _id,    "title": select(    $locale == "en" => coalesce(title.en, title.sq),    $locale == "de" => coalesce(title.de, title.sq),    title.sq  ),    "slug": slug.current,    order,    facadeImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    facadeViewBox,    floorsCount  }
 export type BuildingBySlugQueryResult = {
   _id: string;
   title: string | null;
@@ -706,7 +773,7 @@ export type UnitsByBuildingQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: unitByBuildingAndCodeQuery
-// Query: *[    _type == "unit" &&    building->slug.current == $buildingSlug &&    code == $unitCode  ][0] {    _id,    code,    floor,    unitType,    rooms,    areaNet,    areaGross,    orientation,    status,    svgPath,    floorPlanImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    floorPlanPdf {      asset->{        _id,        url,        originalFilename,        mimeType      }    },    price,    "building": building->{      _id,      title,      "slug": slug.current,      floorsCount    }  }
+// Query: *[    _type == "unit" &&    building->slug.current == $buildingSlug &&    code == $unitCode  ][0] {    _id,    code,    floor,    unitType,    rooms,    areaNet,    areaGross,    orientation,    status,    svgPath,    floorPlanImage {  ...,  asset->{    _id,    url,    metadata {      lqip,      dimensions {        width,        height,        aspectRatio      }    }  }},    floorPlanPdf {      asset->{        _id,        url,        originalFilename,        mimeType      }    },    price,    "building": building->{      _id,      "title": select(    $locale == "en" => coalesce(title.en, title.sq),    $locale == "de" => coalesce(title.de, title.sq),    title.sq  ),      "slug": slug.current,      floorsCount    }  }
 export type UnitByBuildingAndCodeQueryResult = {
   _id: string;
   code: string | null;
@@ -766,15 +833,15 @@ export type AllUnitsQueryResult = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_type == "project"] | order(title asc) {\n    id,\n    _createdAt,\n    title,\n    slug,\n    city,\n    status,\n    mainPhoto {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    description,\n    featured\n  }\n': AllProjectsQueryResult;
-    '\n  *[_type == "project" && slug.current == $slug][0] {\n    title,\n    slug,\n    city,\n    status,\n    mainPhoto {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    video,\n    description,\n    specifications,\n    amenities,\n    paymentPlan,\n    location,\n    brochure {\n  asset->{\n    _id,\n    url,\n    originalFilename,\n    mimeType\n  }\n},\n    gallery[] {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    finishDate,\n    featured\n  }\n': ProjectBySlugQueryResult;
+    '\n  *[_type == "project"] | order(select(\n    $locale == "en" => coalesce(title.en, title.sq),\n    $locale == "de" => coalesce(title.de, title.sq),\n    title.sq\n  ) asc) {\n    id,\n    _createdAt,\n    "title": select(\n    $locale == "en" => coalesce(title.en, title.sq),\n    $locale == "de" => coalesce(title.de, title.sq),\n    title.sq\n  ),\n    slug,\n    "city": select(\n    $locale == "en" => coalesce(city.en, city.sq),\n    $locale == "de" => coalesce(city.de, city.sq),\n    city.sq\n  ),\n    "cityKey": coalesce(city.sq, city.en, city.de),\n    status,\n    mainPhoto {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    "description": select(\n    $locale == "en" => coalesce(description.en, description.sq),\n    $locale == "de" => coalesce(description.de, description.sq),\n    description.sq\n  ),\n    featured\n  }\n': AllProjectsQueryResult;
+    '\n  *[_type == "project" && slug.current == $slug][0] {\n    "title": select(\n    $locale == "en" => coalesce(title.en, title.sq),\n    $locale == "de" => coalesce(title.de, title.sq),\n    title.sq\n  ),\n    slug,\n    "city": select(\n    $locale == "en" => coalesce(city.en, city.sq),\n    $locale == "de" => coalesce(city.de, city.sq),\n    city.sq\n  ),\n    "cityKey": coalesce(city.sq, city.en, city.de),\n    status,\n    mainPhoto {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    video,\n    "description": select(\n    $locale == "en" => coalesce(description.en, description.sq),\n    $locale == "de" => coalesce(description.de, description.sq),\n    description.sq\n  ),\n    "specifications": specifications[]{\n    "v": select(\n      $locale == "en" => coalesce(@.en, @.sq),\n      $locale == "de" => coalesce(@.de, @.sq),\n      @.sq\n    )\n  }.v,\n    "amenities": amenities[]{\n    "v": select(\n      $locale == "en" => coalesce(@.en, @.sq),\n      $locale == "de" => coalesce(@.de, @.sq),\n      @.sq\n    )\n  }.v,\n    paymentPlan[] {\n      percentage,\n      "label": select(\n    $locale == "en" => coalesce(label.en, label.sq),\n    $locale == "de" => coalesce(label.de, label.sq),\n    label.sq\n  )\n    },\n    location,\n    brochure {\n  asset->{\n    _id,\n    url,\n    originalFilename,\n    mimeType\n  }\n},\n    gallery[] {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    finishDate,\n    featured\n  }\n': ProjectBySlugQueryResult;
     '\n  *[_type == "siteSettings"][0] {\n    phone,\n    whatsapp,\n    email,\n    address,\n    socialLinks,\n    defaultShareImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': SiteSettingsQueryResult;
-    '\n *[\n    _type == "page" &&\n    slug.current == $slug &&\n    language == $language\n  ][0] {\n    title,\n    slug,\n    body,\n    seoTitle,\n    seoDescription,\n    seoImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': PageBySlugQueryResult;
-    '\n  *[_type == "homePage"][0] {\n    heroTitle,\n    heroImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    },\n    heroButtonText,\n    heroButtonLink,\n    yearsOfExperience,\n    finishedProjects,\n    apartmentsDelivered,\n    aboutTitle,\n    aboutText,\n    afarizmiIntro,\n    aboutImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    }\n  }\n': HomePageQueryResult;
-    '*[_type == "building"] | order(order asc) {\n  _id,\n  title,\n  "slug": slug.current,\n  facadeImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n  "total": count(*[_type == "unit" && building._ref == ^._id]),\n  "free": count(*[_type == "unit" && building._ref == ^._id && status == "i_lire"])\n}': AllBuildingsQueryResult;
-    '\n  *[_type == "building" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    order,\n    facadeImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    facadeViewBox,\n    floorsCount\n  }\n': BuildingBySlugQueryResult;
+    '\n *[\n    _type == "page" &&\n    slug.current == $slug\n  ][0] {\n    "title": select(\n    $locale == "en" => coalesce(title.en, title.sq),\n    $locale == "de" => coalesce(title.de, title.sq),\n    title.sq\n  ),\n    slug,\n    "body": select(\n    $locale == "en" => coalesce(body.en, body.sq),\n    $locale == "de" => coalesce(body.de, body.sq),\n    body.sq\n  ),\n    "seoTitle": select(\n    $locale == "en" => coalesce(seoTitle.en, seoTitle.sq),\n    $locale == "de" => coalesce(seoTitle.de, seoTitle.sq),\n    seoTitle.sq\n  ),\n    "seoDescription": select(\n    $locale == "en" => coalesce(seoDescription.en, seoDescription.sq),\n    $locale == "de" => coalesce(seoDescription.de, seoDescription.sq),\n    seoDescription.sq\n  ),\n    seoImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n}\n  }\n': PageBySlugQueryResult;
+    '\n  *[_type == "homePage"][0] {\n    "heroTitle": select(\n    $locale == "en" => coalesce(heroTitle.en, heroTitle.sq),\n    $locale == "de" => coalesce(heroTitle.de, heroTitle.sq),\n    heroTitle.sq\n  ),\n    heroImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    },\n    "heroButtonText": select(\n    $locale == "en" => coalesce(heroButtonText.en, heroButtonText.sq),\n    $locale == "de" => coalesce(heroButtonText.de, heroButtonText.sq),\n    heroButtonText.sq\n  ),\n    heroButtonLink,\n    yearsOfExperience,\n    finishedProjects,\n    apartmentsDelivered,\n    "aboutTitle": select(\n    $locale == "en" => coalesce(aboutTitle.en, aboutTitle.sq),\n    $locale == "de" => coalesce(aboutTitle.de, aboutTitle.sq),\n    aboutTitle.sq\n  ),\n    "aboutText": select(\n    $locale == "en" => coalesce(aboutText.en, aboutText.sq),\n    $locale == "de" => coalesce(aboutText.de, aboutText.sq),\n    aboutText.sq\n  ),\n    "afarizmiIntro": select(\n    $locale == "en" => coalesce(afarizmiIntro.en, afarizmiIntro.sq),\n    $locale == "de" => coalesce(afarizmiIntro.de, afarizmiIntro.sq),\n    afarizmiIntro.sq\n  ),\n    aboutImage {\n      ...,\n      asset->{\n  _id,\n  url,\n  metadata {\n    lqip,\n    dimensions {\n      width,\n      height,\n      aspectRatio\n    }\n  }\n}\n    }\n  }\n': HomePageQueryResult;
+    '*[_type == "building"] | order(order asc) {\n  _id,\n  "title": select(\n    $locale == "en" => coalesce(title.en, title.sq),\n    $locale == "de" => coalesce(title.de, title.sq),\n    title.sq\n  ),\n  "slug": slug.current,\n  facadeImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n  "total": count(*[_type == "unit" && building._ref == ^._id]),\n  "free": count(*[_type == "unit" && building._ref == ^._id && status == "i_lire"])\n}': AllBuildingsQueryResult;
+    '\n  *[_type == "building" && slug.current == $slug][0] {\n    _id,\n    "title": select(\n    $locale == "en" => coalesce(title.en, title.sq),\n    $locale == "de" => coalesce(title.de, title.sq),\n    title.sq\n  ),\n    "slug": slug.current,\n    order,\n    facadeImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    facadeViewBox,\n    floorsCount\n  }\n': BuildingBySlugQueryResult;
     '\n  *[_type == "unit" && building._ref == $buildingId] {\n    _id,\n    code,\n    floor,\n    unitType,\n    rooms,\n    areaNet,\n    areaGross,\n    orientation,\n    status,\n    svgPath,\n    floorPlanImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    floorPlanPdf {\n  asset->{\n    _id,\n    url,\n    originalFilename,\n    mimeType\n  }\n},\n    price\n  }\n': UnitsByBuildingQueryResult;
-    '\n  *[\n    _type == "unit" &&\n    building->slug.current == $buildingSlug &&\n    code == $unitCode\n  ][0] {\n    _id,\n    code,\n    floor,\n    unitType,\n    rooms,\n    areaNet,\n    areaGross,\n    orientation,\n    status,\n    svgPath,\n    floorPlanImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    floorPlanPdf {\n      asset->{\n        _id,\n        url,\n        originalFilename,\n        mimeType\n      }\n    },\n    price,\n    "building": building->{\n      _id,\n      title,\n      "slug": slug.current,\n      floorsCount\n    }\n  }\n': UnitByBuildingAndCodeQueryResult;
+    '\n  *[\n    _type == "unit" &&\n    building->slug.current == $buildingSlug &&\n    code == $unitCode\n  ][0] {\n    _id,\n    code,\n    floor,\n    unitType,\n    rooms,\n    areaNet,\n    areaGross,\n    orientation,\n    status,\n    svgPath,\n    floorPlanImage {\n  ...,\n  asset->{\n    _id,\n    url,\n    metadata {\n      lqip,\n      dimensions {\n        width,\n        height,\n        aspectRatio\n      }\n    }\n  }\n},\n    floorPlanPdf {\n      asset->{\n        _id,\n        url,\n        originalFilename,\n        mimeType\n      }\n    },\n    price,\n    "building": building->{\n      _id,\n      "title": select(\n    $locale == "en" => coalesce(title.en, title.sq),\n    $locale == "de" => coalesce(title.de, title.sq),\n    title.sq\n  ),\n      "slug": slug.current,\n      floorsCount\n    }\n  }\n': UnitByBuildingAndCodeQueryResult;
     '\n  *[_type == "unit"] {\n    _id,\n    code,\n    "buildingSlug": building->slug.current\n  }\n': AllUnitsQueryResult;
   }
 }

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type LocationMapProps = {
   latitude?: number;
@@ -12,6 +13,7 @@ export default function LocationMap({
   latitude,
   longitude,
 }: LocationMapProps) {
+  const t = useTranslations("projects");
   const [showMap, setShowMap] = useState(false);
 
   if (latitude === undefined || longitude === undefined) {
@@ -22,7 +24,7 @@ export default function LocationMap({
 
   return (
     <section>
-      <h2>Location</h2>
+      <h2>{t("location")}</h2>
 
       {!showMap ? (
         <button
@@ -39,11 +41,11 @@ export default function LocationMap({
             cursor: "pointer",
             overflow: "hidden",
           }}
-          aria-label="Open project location map"
+          aria-label={t("openMap")}
         >
           <Image
             src="/images/map-placeholder.png"
-            alt="Project location map"
+            alt={t("mapTitle")}
             fill
             sizes="(max-width: 800px) 100vw, 800px"
             style={{ objectFit: "cover" }}
@@ -62,13 +64,13 @@ export default function LocationMap({
               fontWeight: 600,
             }}
           >
-            View map
+            {t("viewMap")}
           </span>
         </button>
       ) : (
         <iframe
           src={mapUrl}
-          title="Project location"
+          title={t("mapTitle")}
           width="100%"
           height="450"
           loading="lazy"

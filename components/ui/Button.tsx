@@ -1,6 +1,7 @@
-// "use client";
+"use client";
 
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 type ButtonVariant = "primary" | "secondary" | "danger";
 
@@ -17,6 +18,7 @@ export default function Button({
   children,
   ...props
 }: ButtonProps) {
+  const t = useTranslations("common");
   const variantClasses = {
     primary:
       "bg-primary text-white hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.98]",
@@ -37,7 +39,7 @@ export default function Button({
           : "cursor-pointer"
       } ${props.className ?? ""}`}
     >
-      {loading ? "Loading..." : children}
+      {loading ? t("loading") : children}
     </button>
   );
 }

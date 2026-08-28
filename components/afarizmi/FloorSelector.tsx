@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 
 type FloorSelectorProps = {
   floorsCount: number;
@@ -13,6 +14,7 @@ export default function FloorSelector({
   activeFloor,
   onFloorChange,
 }: FloorSelectorProps) {
+  const t = useTranslations("floor");
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const floors = Array.from(
@@ -49,7 +51,7 @@ export default function FloorSelector({
     <div
       className="flex flex-col gap-2"
       role="listbox"
-      aria-label="Zgjedh katin"
+      aria-label={t("choose")}
     >
       {floors.map((floor) => {
         const isActive = floor === activeFloor;
@@ -72,7 +74,7 @@ export default function FloorSelector({
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            {floor === 0 ? "Përdhesë" : `Kati ${floor}`}
+            {floor === 0 ? t("ground") : t("n", { n: floor })}
           </button>
         );
       })}

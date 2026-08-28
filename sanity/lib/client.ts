@@ -7,10 +7,11 @@ import type {
   SiteSettingsQueryResult,
   AllBuildingsQueryResult,
   BuildingBySlugQueryResult,
-UnitsByBuildingQueryResult,
-UnitByBuildingAndCodeQueryResult,
-
+  UnitsByBuildingQueryResult,
+  UnitByBuildingAndCodeQueryResult,
+  AllUnitsQueryResult,
 } from "../../sanity.types";
+import { routing } from "@/i18n/routing";
 import {
   allProjectsQuery,
   pageBySlugQuery,
@@ -31,14 +32,26 @@ export const client = createClient({
   useCdn: true,
 });
 
-export async function getAllProjects(): Promise<AllProjectsQueryResult> {
-  return client.fetch(allProjectsQuery);
+function resolveLocale(locale?: string): string {
+  return routing.locales.includes(locale as (typeof routing.locales)[number])
+    ? locale!
+    : routing.defaultLocale;
+}
+
+export async function getAllProjects(
+  locale?: string,
+): Promise<AllProjectsQueryResult> {
+  return client.fetch(allProjectsQuery, { locale: resolveLocale(locale) });
 }
 
 export async function getProjectBySlug(
   slug: string,
+  locale?: string,
 ): Promise<ProjectBySlugQueryResult> {
-  return client.fetch(projectBySlugQuery, { slug });
+  return client.fetch(projectBySlugQuery, {
+    slug,
+    locale: resolveLocale(locale),
+  });
 }
 
 export async function getSiteSettings(): Promise<SiteSettingsQueryResult> {
@@ -47,23 +60,34 @@ export async function getSiteSettings(): Promise<SiteSettingsQueryResult> {
 
 export async function getPageBySlug(
   slug: string,
-  language: string,
+  locale?: string,
 ): Promise<PageBySlugQueryResult> {
-  return client.fetch(pageBySlugQuery, { slug, language });
+  return client.fetch(pageBySlugQuery, {
+    slug,
+    locale: resolveLocale(locale),
+  });
 }
 
-export async function getHomePage(): Promise<HomePageQueryResult> {
-  return client.fetch(homePageQuery);
+export async function getHomePage(
+  locale?: string,
+): Promise<HomePageQueryResult> {
+  return client.fetch(homePageQuery, { locale: resolveLocale(locale) });
 }
 
-export async function getAllBuildings(): Promise<AllBuildingsQueryResult> {
-  return client.fetch(allBuildingsQuery);
+export async function getAllBuildings(
+  locale?: string,
+): Promise<AllBuildingsQueryResult> {
+  return client.fetch(allBuildingsQuery, { locale: resolveLocale(locale) });
 }
 
 export async function getBuildingBySlug(
   slug: string,
+  locale?: string,
 ): Promise<BuildingBySlugQueryResult> {
-  return client.fetch(buildingBySlugQuery, { slug });
+  return client.fetch(buildingBySlugQuery, {
+    slug,
+    locale: resolveLocale(locale),
+  });
 }
 
 export async function getUnitsByBuilding(
@@ -75,17 +99,15 @@ export async function getUnitsByBuilding(
 export async function getUnitByBuildingAndCode(
   buildingSlug: string,
   unitCode: string,
+  locale?: string,
 ): Promise<UnitByBuildingAndCodeQueryResult> {
   return client.fetch(unitByBuildingAndCodeQuery, {
     buildingSlug,
     unitCode,
+    locale: resolveLocale(locale),
   });
 }
-
-
-import type { AllUnitsQueryResult } from "../../sanity.types";
 
 export async function getAllUnits(): Promise<AllUnitsQueryResult> {
   return client.fetch(allUnitsQuery);
 }
-

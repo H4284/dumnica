@@ -3,7 +3,7 @@ import FeaturedProjects from "@/components/home/FeaturedProjects";
 import Numbers from "@/components/home/Numbers";
 import About from "@/components/home/About";
 import Contact from "@/components/home/Contact";
-import HashRedirect from "@/components/redirects/HashRedirect"
+import HashRedirect from "@/components/redirects/HashRedirect";
 
 import {
   getAllProjects,
@@ -11,19 +11,15 @@ import {
   getSiteSettings,
 } from "@/sanity/lib/client";
 
-type HomePageProps = {
-  params: Promise<{
-    locale: string;
-  }>;
-};
-
 export default async function HomePage({
   params,
-}: HomePageProps) {
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
 
-  const homePage = await getHomePage();
-  const projects = await getAllProjects();
+  const homePage = await getHomePage(locale);
+  const projects = await getAllProjects(locale);
   const siteSettings = await getSiteSettings();
 
   if (!homePage || !siteSettings) {
@@ -35,10 +31,7 @@ export default async function HomePage({
 
       <Hero homePage={homePage} />
 
-      <FeaturedProjects
-        projects={projects}
-        locale={locale}
-      />
+      <FeaturedProjects projects={projects} />
 
       <Numbers homePage={homePage} />
 

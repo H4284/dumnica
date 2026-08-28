@@ -1,7 +1,12 @@
 import { notFound } from "next/navigation";
-import BuildingExplorer from "@/components/afarizmi/BuildingExplorer";
-import { getBuildingBySlug, getUnitsByBuilding, getSiteSettings, } from "@/sanity/lib/client";
+import { getTranslations } from "next-intl/server";
 
+import BuildingExplorer from "@/components/afarizmi/BuildingExplorer";
+import {
+  getBuildingBySlug,
+  getUnitsByBuilding,
+  getSiteSettings,
+} from "@/sanity/lib/client";
 
 type Props = {
   params: Promise<{
@@ -11,11 +16,10 @@ type Props = {
 };
 
 export default async function BuildingPage({ params }: Props) {
-  const { building } = await params;
+  const { building, locale } = await params;
+  const t = await getTranslations("afarizmi");
 
-  const currentBuilding = await getBuildingBySlug(building);
-
-  console.log("CURRENT BUILDING:", currentBuilding);
+  const currentBuilding = await getBuildingBySlug(building, locale);
 
   if (!currentBuilding) {
     notFound();
@@ -23,11 +27,12 @@ export default async function BuildingPage({ params }: Props) {
 
   const units = await getUnitsByBuilding(currentBuilding._id);
   const siteSettings = await getSiteSettings();
+
   if (!currentBuilding.facadeImage?.asset?.url) {
     return (
       <main>
         <h1>{currentBuilding.title}</h1>
-        <p>Facade image nuk është vendosur ende.</p>
+        <p>{t("facadeMissing")}</p>
       </main>
     );
   }
@@ -43,7 +48,6 @@ export default async function BuildingPage({ params }: Props) {
         units={units}
         whatsappNumber={siteSettings?.whatsapp ?? ""}
       />
-      
     </main>
   );
 }

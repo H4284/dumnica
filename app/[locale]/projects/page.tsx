@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import ProjectCard from "@/components/projects/ProjectCard";
 import ProjectFilters from "@/components/projects/ProjectFilters";
 import { getAllProjects } from "@/sanity/lib/client";
@@ -17,22 +19,28 @@ export default async function ProjectsPage({
   searchParams,
 }: ProjectsPageProps) {
   const { locale } = await params;
-  const projects = await getAllProjects();
+  const t = await getTranslations("projects");
+  const projects = await getAllProjects(locale);
   const filters = await searchParams;
 
   const city = filters.city;
   const status = filters.status;
 
   const cities = Array.from(
-    new Set(
+    new Map(
       projects
-        .map((project) => project.city)
-        .filter((city): city is string => Boolean(city))
-    )
-  ).sort();
+        .filter((project) => project.cityKey)
+        .map((project) => [
+          project.cityKey as string,
+          project.city ?? (project.cityKey as string),
+        ]),
+    ).entries(),
+  )
+    .map(([key, label]) => ({ key, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, locale));
 
   const filteredProjects = projects.filter((project) => {
-    const matchesCity = !city || project.city === city;
+    const matchesCity = !city || project.cityKey === city;
     const matchesStatus = !status || project.status === status;
 
     return matchesCity && matchesStatus;
@@ -40,24 +48,23 @@ export default async function ProjectsPage({
 
   return (
     <main>
-      <h1>Projects</h1>
+      <h1>{t("title")}</h1>
 
       <ProjectFilters cities={cities} />
 
-      <p>{filteredProjects.length} projects</p>
+      <p>{t("count", { count: filteredProjects.length })}</p>
 
       {filteredProjects.length === 0 ? (
-        <p>No projects found.</p>
+        <p>{t("empty")}</p>
       ) : (
         <div className="projects-grid">
-        {filteredProjects.map((project) => (
-          <ProjectCard
-            key={project.slug?.current}
-            project={project}
-            locale={locale}
-          />
-        ))}
-      </div>
+          {filteredProjects.map((project) => (
+            <ProjectCard
+              key={project.slug?.current}
+              project={project}
+            />
+          ))}
+        </div>
       )}
     </main>
   );

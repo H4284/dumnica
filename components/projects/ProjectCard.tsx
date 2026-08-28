@@ -1,40 +1,37 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import type { AllProjectsQueryResult } from "@/sanity.types";
+import { Link } from "@/i18n/navigation";
+import { projectStatusKey } from "@/lib/statusKeys";
 
 type ProjectCardProps = {
   project: AllProjectsQueryResult[number];
-  locale: string;
 };
 
-const statusLabels = {
-  construction: "Në ndërtim",
-  finished: "I përfunduar",
-  "coming-soon": "Së shpejti",
-};
-
-export default function ProjectCard({
-  project,
-  locale,
-}: ProjectCardProps) {
+export default function ProjectCard({ project }: ProjectCardProps) {
+  const t = useTranslations("projects");
+  const tStatus = useTranslations("projectStatus");
   const imageUrl = project.mainPhoto?.asset?.url;
   const slug = project.slug?.current;
+  const statusKey = projectStatusKey(project.status);
 
   if (!slug) return null;
 
   return (
     <article className="project-card">
       <Link
-        href={`/${locale}/projects/${slug}`}
+        href={`/projects/${slug}`}
         className="project-card-link"
-        aria-label={`View ${project.title}`}
+        aria-label={t("viewProject", { title: project.title ?? slug })}
       >
         <div className="project-card-image">
           {imageUrl && (
             <Image
               src={imageUrl}
-              alt={project.title || "Project"}
+              alt={project.title || t("imageAlt")}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
             />
@@ -42,11 +39,9 @@ export default function ProjectCard({
         </div>
 
         <div className="project-card-content">
-          {project.status && (
+          {statusKey && (
             <span className="project-card-status">
-              {statusLabels[
-                project.status as keyof typeof statusLabels
-              ] || project.status}
+              {tStatus(statusKey)}
             </span>
           )}
 
@@ -54,9 +49,7 @@ export default function ProjectCard({
 
           {project.city && <p>{project.city}</p>}
 
-          {project.description && (
-            <p>{project.description}</p>
-          )}
+          {project.description && <p>{project.description}</p>}
         </div>
       </Link>
     </article>

@@ -2,19 +2,16 @@ import { getAllBuildings, getHomePage } from "@/sanity/lib/client";
 import BuildingPicker from "@/components/afarizmi/BuildingPicker";
 
 type AfarizmiPageProps = {
-    params: Promise<{
-      locale: string;
-    }>;
-  };
+  params: Promise<{
+    locale: string;
+  }>;
+};
 
-  export default async function AfarizmiPage({
-    params,
-  }: AfarizmiPageProps) {
-    const { locale } = await params;
-    
+export default async function AfarizmiPage({ params }: AfarizmiPageProps) {
+  const { locale } = await params;
   const [homePage, buildings] = await Promise.all([
-    getHomePage(),
-    getAllBuildings(),
+    getHomePage(locale),
+    getAllBuildings(locale),
   ]);
 
   return (
@@ -24,8 +21,7 @@ type AfarizmiPageProps = {
           <p>{homePage.afarizmiIntro}</p>
         )}
 
-        <BuildingPicker buildings={buildings} 
-        locale={locale}/>
+        <BuildingPicker buildings={buildings} />
       </section>
     </main>
   );

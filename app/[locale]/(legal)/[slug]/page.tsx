@@ -1,4 +1,5 @@
 import { PortableText } from "@portabletext/react";
+import { notFound } from "next/navigation";
 
 import { getPageBySlug } from "@/sanity/lib/client";
 
@@ -15,7 +16,7 @@ export default async function LegalPage({ params }: LegalPageProps) {
   const page = await getPageBySlug(slug, locale);
 
   if (!page) {
-    return null;
+    notFound();
   }
 
   return (

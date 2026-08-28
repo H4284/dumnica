@@ -9,7 +9,7 @@ export default defineType({
     defineField({
       name: "title",
       title: "Titulli",
-      type: "string",
+      type: "localeString",
       description: "Shkruani titullin e faqes, p.sh. Rreth Nesh.",
       validation: (Rule) =>
         Rule.required().error("Titulli është i detyrueshëm."),
@@ -21,7 +21,7 @@ export default defineType({
       type: "slug",
       description: "Adresa e faqes, p.sh. rreth-nesh.",
       options: {
-        source: "title",
+        source: "title.sq",
       },
       validation: (Rule) =>
         Rule.required().error("Slug është i detyrueshëm."),
@@ -30,13 +30,8 @@ export default defineType({
     defineField({
       name: "body",
       title: "Përmbajtja",
-      type: "array",
+      type: "localeBlock",
       description: "Shkruani përmbajtjen kryesore të faqes.",
-      of: [
-        {
-          type: "block",
-        },
-      ],
       validation: (Rule) =>
         Rule.required().error("Përmbajtja është e detyrueshme."),
     }),
@@ -44,19 +39,16 @@ export default defineType({
     defineField({
       name: "seoTitle",
       title: "SEO Title",
-      type: "string",
+      type: "localeString",
       description: "Titulli që mund të shfaqet në rezultatet e Google.",
-      validation: (Rule) => Rule.max(60),
     }),
 
     defineField({
       name: "seoDescription",
       title: "SEO Description",
-      type: "text",
-      rows: 3,
+      type: "localeText",
       description:
         "Përshkrim i shkurtër që mund të shfaqet në rezultatet e Google.",
-      validation: (Rule) => Rule.max(160),
     }),
 
     defineField({
@@ -73,8 +65,15 @@ export default defineType({
 
   preview: {
     select: {
+      titleSq: "title.sq",
       title: "title",
       subtitle: "slug.current",
+    },
+    prepare({ titleSq, title, subtitle }) {
+      return {
+        title: titleSq || (typeof title === "string" ? title : "Untitled"),
+        subtitle,
+      };
     },
   },
 });

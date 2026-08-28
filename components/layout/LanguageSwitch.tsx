@@ -1,19 +1,35 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
-type LanguageSwitchProps = {
-  locale: string;
-};
+import { Link, usePathname } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 
-export default function LanguageSwitch({
-  locale,
-}: LanguageSwitchProps) {
+export default function LanguageSwitch() {
+  const t = useTranslations("nav");
+  const locale = useLocale();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const query = Object.fromEntries(searchParams.entries());
+  const href =
+    Object.keys(query).length > 0
+      ? { pathname, query }
+      : pathname;
 
-  const newLocale = locale === "en" ? "sq" : "en";
-  const newPathname = pathname.replace(`/${locale}`, `/${newLocale}`);
-
-  return <Link href={newPathname}>{newLocale.toUpperCase()}</Link>;
+  return (
+    <nav aria-label={t("switchLanguage")}>
+      {routing.locales.map((item) => (
+        <Link
+          key={item}
+          href={href}
+          locale={item}
+          hrefLang={item}
+          aria-current={item === locale ? "true" : undefined}
+        >
+          {item.toUpperCase()}
+        </Link>
+      ))}
+    </nav>
+  );
 }

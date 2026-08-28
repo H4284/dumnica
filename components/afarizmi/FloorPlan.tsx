@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { BuildingBySlugQueryResult, UnitsByBuildingQueryResult, } from "@/sanity.types";
 import FloorSelector from "./FloorSelector";
 
@@ -19,10 +20,8 @@ type Props = {
 export default function FloorPlan({
   building,
   units,
-  selectedUnit: _selectedUnit,
-  onSelectUnit: _onSelectUnit,
-  visibleUnitIds,
 }: Props) {
+  const t = useTranslations("floor");
   const [activeFloor, setActiveFloor] = useState(0);
   const [activePlanIndex, setActivePlanIndex] = useState(0);
 
@@ -47,11 +46,12 @@ export default function FloorPlan({
       });
   }, [floorUnits]);
 
-  useEffect(() => {
-    setActivePlanIndex(0);
-  }, [activeFloor]);
-
   const activePlan = floorPlans[activePlanIndex];
+
+  function handleFloorChange(floor: number) {
+    setActiveFloor(floor);
+    setActivePlanIndex(0);
+  }
 
   function handlePreviousPlan() {
     setActivePlanIndex((current) =>
@@ -66,23 +66,21 @@ export default function FloorPlan({
   }
 
   const floorLabel =
-    activeFloor === 0 ? "Përdhesë" : `Kati ${activeFloor}`;
+    activeFloor === 0 ? t("ground") : t("n", { n: activeFloor });
 
   return (
     <section className="mt-12">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold">Planimetria</h2>
+        <h2 className="text-2xl font-semibold">{t("planTitle")}</h2>
 
-        <p className="mt-1 text-sm text-gray-500">
-          Zgjedh katin për të parë planimetritë.
-        </p>
+        <p className="mt-1 text-sm text-gray-500">{t("chooseHint")}</p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
         <FloorSelector
           floorsCount={building.floorsCount ?? 0}
           activeFloor={activeFloor}
-          onFloorChange={setActiveFloor}
+          onFloorChange={handleFloorChange}
         />
 
         <div className="relative overflow-hidden rounded-lg bg-gray-50">
@@ -91,9 +89,11 @@ export default function FloorPlan({
               <div className="relative overflow-hidden">
                 <Image
                   src={activePlan.asset.url}
-                  alt={`${building.title} - ${floorLabel} - Planimetria ${
-                    activePlanIndex + 1
-                  }`}
+                  alt={t("planAlt", {
+                    building: building.title ?? "",
+                    floor: floorLabel,
+                    index: activePlanIndex + 1,
+                  })}
                   width={1600}
                   height={900}
                   sizes="(max-width: 1024px) 100vw, 900px"
@@ -108,7 +108,7 @@ export default function FloorPlan({
                   <button
                     type="button"
                     onClick={handlePreviousPlan}
-                    aria-label="Planimetria paraprake"
+                    aria-label={t("previous")}
                     className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-xl text-white transition hover:bg-black/90"
                   >
                     ‹
@@ -117,7 +117,7 @@ export default function FloorPlan({
                   <button
                     type="button"
                     onClick={handleNextPlan}
-                    aria-label="Planimetria tjetër"
+                    aria-label={t("next")}
                     className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-xl text-white transition hover:bg-black/90"
                   >
                     ›
@@ -129,7 +129,7 @@ export default function FloorPlan({
                         key={plan.asset?._id ?? index}
                         type="button"
                         onClick={() => setActivePlanIndex(index)}
-                        aria-label={`Shfaq planimetrinë ${index + 1}`}
+                        aria-label={t("showPlan", { index: index + 1 })}
                         aria-current={
                           index === activePlanIndex ? "true" : undefined
                         }
@@ -151,8 +151,7 @@ export default function FloorPlan({
           ) : (
             <div className="flex min-h-80 items-center justify-center rounded-lg bg-gray-100">
               <p className="text-sm text-gray-500">
-                Planimetria për {floorLabel.toLowerCase()} nuk është vendosur
-                ende.
+                {t("missing", { floor: floorLabel })}
               </p>
             </div>
           )}

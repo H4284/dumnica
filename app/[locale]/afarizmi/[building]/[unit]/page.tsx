@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import type { AllUnitsQueryResult } from "@/sanity.types";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
+import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
+import { formatFloorLabel, formatOrientation } from "@/lib/i18nLabels";
+import { unitStatusKey } from "@/lib/statusKeys";
 import {
-    getAllUnits,
-    getUnitByBuildingAndCode,
-  } from "@/sanity/lib/client";
+  getAllUnits,
+  getUnitByBuildingAndCode,
+} from "@/sanity/lib/client";
 
 type Props = {
   params: Promise<{
@@ -17,27 +21,28 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-    const units = await getAllUnits();
-  
-    const locales = ["sq", "en"];
-  
-  return locales.flatMap((locale) =>
-  units
-    .filter((unit: AllUnitsQueryResult[number]) => unit.code && unit.buildingSlug)
-    .map((unit: AllUnitsQueryResult[number]) => ({
-      locale,
-      building: unit.buildingSlug!,
-      unit: unit.code!,
-    })),
-);
-  }
+  const units = await getAllUnits();
+
+  return routing.locales.flatMap((locale) =>
+    units
+      .filter(
+        (unit: AllUnitsQueryResult[number]) =>
+          unit.code && unit.buildingSlug,
+      )
+      .map((unit: AllUnitsQueryResult[number]) => ({
+        locale,
+        building: unit.buildingSlug!,
+        unit: unit.code!,
+      })),
+  );
+}
 
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
-  const { building, unit } = await params;
+  const { building, unit, locale } = await params;
 
-  const currentUnit = await getUnitByBuildingAndCode(building, unit);
+  const currentUnit = await getUnitByBuildingAndCode(building, unit, locale);
 
   if (!currentUnit) {
     return {
@@ -82,25 +87,15 @@ export async function generateMetadata({
   };
 }
 
-type UnitStatus = "i_lire" | "i_rezervuar" | "i_shitur" | null;
-
-function getStatusLabel(status: UnitStatus) {
-  switch (status) {
-    case "i_lire":
-      return "I lirë";
-    case "i_rezervuar":
-      return "I rezervuar";
-    case "i_shitur":
-      return "I shitur";
-    default:
-      return "Pa status";
-  }
-}
-
 export default async function UnitPage({ params }: Props) {
-  const { locale, building, unit } = await params;
+  const { building, unit, locale } = await params;
+  const t = await getTranslations("unit");
+  const tAfarizmi = await getTranslations("afarizmi");
+  const tFloor = await getTranslations("floor");
+  const tFilters = await getTranslations("filters");
+  const tStatus = await getTranslations("unitStatus");
 
-  const currentUnit = await getUnitByBuildingAndCode(building, unit);
+  const currentUnit = await getUnitByBuildingAndCode(building, unit, locale);
 
   if (!currentUnit) {
     notFound();
@@ -109,14 +104,11 @@ export default async function UnitPage({ params }: Props) {
   const buildingTitle = currentUnit.building?.title ?? "Dumnica Group";
   const unitCode = currentUnit.code ?? unit;
 
-  const floorLabel =
-    currentUnit.floor === 0
-      ? "Përdhesë"
-      : currentUnit.floor !== null
-        ? `Kati ${currentUnit.floor}`
-        : "—";
-
-  const statusLabel = getStatusLabel(currentUnit.status);
+  const floorLabel = formatFloorLabel(currentUnit.floor, {
+    ground: tFloor("ground"),
+    n: (n) => tFloor("n", { n }),
+  });
+  const statusLabel = tStatus(unitStatusKey(currentUnit.status));
 
   const availability =
     currentUnit.status === "i_shitur"
@@ -125,7 +117,7 @@ export default async function UnitPage({ params }: Props) {
         ? "https://schema.org/LimitedAvailability"
         : "https://schema.org/InStock";
 
-  const interactiveUrl = `/${locale}/afarizmi/${building}?njesia=${encodeURIComponent(
+  const interactiveUrl = `/afarizmi/${building}?njesia=${encodeURIComponent(
     unitCode,
   )}`;
 
@@ -173,7 +165,7 @@ export default async function UnitPage({ params }: Props) {
         </p>
 
         <h1 className="text-3xl font-bold text-primary">
-          Njësia {unitCode}
+          {t("codeTitle", { code: unitCode })}
         </h1>
 
         <p className="mt-2 text-primary">
@@ -183,14 +175,14 @@ export default async function UnitPage({ params }: Props) {
 
       <section className="grid gap-6 rounded-xl border border-border bg-surface p-6 text-primary sm:grid-cols-2">
         <div>
-          <h2 className="text-sm text-secondary">Dhoma</h2>
+          <h2 className="text-sm text-secondary">{tAfarizmi("rooms")}</h2>
           <p className="text-xl font-semibold text-primary">
             {currentUnit.rooms ?? "—"}
           </p>
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">Sipërfaqe neto</h2>
+          <h2 className="text-sm text-secondary">{t("netArea")}</h2>
           <p className="text-xl font-semibold text-primary">
             {currentUnit.areaNet
               ? `${currentUnit.areaNet} m²`
@@ -199,7 +191,7 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">Sipërfaqe bruto</h2>
+          <h2 className="text-sm text-secondary">{t("grossArea")}</h2>
           <p className="text-xl font-semibold text-primary">
             {currentUnit.areaGross
               ? `${currentUnit.areaGross} m²`
@@ -208,26 +200,29 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">Kati</h2>
+          <h2 className="text-sm text-secondary">{tAfarizmi("floor")}</h2>
           <p className="text-xl font-semibold text-primary">{floorLabel}</p>
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">Orientimi</h2>
+          <h2 className="text-sm text-secondary">{t("orientation")}</h2>
           <p className="text-xl font-semibold text-primary">
-            {currentUnit.orientation?.length
-              ? currentUnit.orientation.join(", ")
-              : "—"}
+            {formatOrientation(currentUnit.orientation, {
+              east: tFilters("east"),
+              west: tFilters("west"),
+              north: tFilters("north"),
+              south: tFilters("south"),
+            })}
           </p>
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">Tipi</h2>
+          <h2 className="text-sm text-secondary">{t("type")}</h2>
           <p className="text-xl font-semibold text-primary">
             {currentUnit.unitType === "banesor"
-              ? "Banesor"
+              ? t("residential")
               : currentUnit.unitType === "afarist"
-                ? "Afarist"
+                ? t("commercial")
                 : "—"}
           </p>
         </div>
@@ -236,12 +231,12 @@ export default async function UnitPage({ params }: Props) {
       {currentUnit.floorPlanImage?.asset?.url && (
         <section className="mt-10">
           <h2 className="mb-4 text-2xl font-semibold">
-            Planimetria
+            {t("plan")}
           </h2>
 
           <img
             src={currentUnit.floorPlanImage.asset.url}
-            alt={`Planimetria e njësisë ${unitCode}`}
+            alt={t("planAlt", { code: unitCode })}
             className="w-full rounded-lg"
           />
         </section>
@@ -255,7 +250,7 @@ export default async function UnitPage({ params }: Props) {
             rel="noopener noreferrer"
             className="inline-flex rounded-lg border px-5 py-3 font-medium"
           >
-            Shiko planimetrinë PDF
+            {t("viewPdf")}
           </a>
         </section>
       )}
@@ -263,19 +258,15 @@ export default async function UnitPage({ params }: Props) {
       <section className="mt-10">
         {currentUnit.status === "i_shitur" ? (
           <div className="rounded-lg border p-5">
-            <h2 className="font-semibold">
-              Kjo njësi është shitur
-            </h2>
+            <h2 className="font-semibold">{t("soldTitle")}</h2>
 
-            <p className="mt-1 text-sm text-gray-600">
-              Shiko njësitë e tjera të disponueshme.
-            </p>
+            <p className="mt-1 text-sm text-gray-600">{t("soldHint")}</p>
 
             <Link
-              href={`/${locale}/afarizmi/${building}`}
+              href={`/afarizmi/${building}`}
               className="mt-4 inline-flex rounded-lg bg-black px-5 py-3 text-white"
             >
-              Shiko njësi të ngjashme
+              {t("similarUnits")}
             </Link>
           </div>
         ) : (
@@ -283,7 +274,7 @@ export default async function UnitPage({ params }: Props) {
             href={interactiveUrl}
             className="inline-flex rounded-lg bg-black px-5 py-3 text-white"
           >
-            Shiko në eksploruesin interaktiv
+            {t("openExplorer")}
           </Link>
         )}
       </section>

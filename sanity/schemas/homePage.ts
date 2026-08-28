@@ -9,7 +9,7 @@ export default defineType({
     defineField({
       name: "heroTitle",
       title: "Hero Title",
-      type: "string",
+      type: "localeString",
     }),
 
     defineField({
@@ -24,7 +24,7 @@ export default defineType({
     defineField({
       name: "heroButtonText",
       title: "Hero Button Text",
-      type: "string",
+      type: "localeString",
     }),
 
     defineField({
@@ -54,14 +54,13 @@ export default defineType({
     defineField({
       name: "aboutTitle",
       title: "About Title",
-      type: "string",
+      type: "localeString",
     }),
 
     defineField({
       name: "aboutText",
       title: "About Text",
-      type: "text",
-      rows: 5,
+      type: "localeText",
     }),
 
     defineField({
@@ -76,8 +75,7 @@ export default defineType({
     defineField({
       name: "afarizmiIntro",
       title: "Afarizmi Intro",
-      type: "text",
-      rows: 3,
+      type: "localeText",
       description: "Teksti i shkurtër që shfaqet mbi listën e ndërtesave.",
     }),
   ],

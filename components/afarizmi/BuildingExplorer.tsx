@@ -1,8 +1,15 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { parseAsInteger, parseAsString, useQueryStates, } from "nuqs";
-import type { BuildingBySlugQueryResult, UnitsByBuildingQueryResult, } from "@/sanity.types";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { useTranslations } from "next-intl";
+
+import type {
+  BuildingBySlugQueryResult,
+  UnitsByBuildingQueryResult,
+} from "@/sanity.types";
+import { formatFloorLabel } from "@/lib/i18nLabels";
+import { unitStatusKey } from "@/lib/statusKeys";
 import FacadeOverlay from "./FacadeOverlay";
 import FloorPlan from "./FloorPlan";
 import UnitFilters from "./UnitFilters";
@@ -17,24 +24,15 @@ type Props = {
   units: UnitsByBuildingQueryResult;
   whatsappNumber: string;
 };
-function getStatusLabel(status: Unit["status"]) {
-  switch (status) {
-    case "i_lire":
-      return "I lirë";
-    case "i_rezervuar":
-      return "I rezervuar";
-    case "i_shitur":
-      return "I shitur";
-    default:
-      return "Pa status";
-  }
-}
 
 export default function BuildingExplorer({
   building,
   units,
   whatsappNumber,
 }: Props) {
+  const t = useTranslations("afarizmi");
+  const tFloor = useTranslations("floor");
+  const tStatus = useTranslations("unitStatus");
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
 
   const selectedUnitElementRef = useRef<SVGPathElement | null>(null);
@@ -62,9 +60,6 @@ export default function BuildingExplorer({
     njesia: parseAsString,
   });
 
-  /*
-   * Filter the units according to the URL query parameters.
-   */
   const filteredUnits = filterUnits(units, {
     floor,
     rooms,
@@ -75,28 +70,12 @@ export default function BuildingExplorer({
     type,
   });
 
-  /*
-   * If the URL contains ?njesia=A-3-14,
-   * find that exact unit.
-   */
   const urlSelectedUnit = njesia
     ? units.find((unit) => unit.code === njesia) ?? null
     : null;
 
-  /*
-   * The unit that should currently be selected.
-   *
-   * Local state is used after clicking a unit.
-   * URL state is used after refresh / opening a shared link.
-   */
-  const visibleSelectedUnit =
-    selectedUnit ?? urlSelectedUnit ?? null;
+  const visibleSelectedUnit = selectedUnit ?? urlSelectedUnit ?? null;
 
-  /*
-   * IDs of units that match the current filters.
-   *
-   * FacadeOverlay uses this to dim units that don't match.
-   */
   const visibleUnitIds = new Set(
     filteredUnits.map((unit) => unit._id),
   );
@@ -108,18 +87,10 @@ export default function BuildingExplorer({
 
     setSelectedUnit(unit);
 
-    /*
-     * Put the selected apartment in the URL.
-     * Example:
-     * ?status=i_lire&njesia=A-3-14
-     */
     void setFilters({
       njesia: unit.code,
     });
 
-    /*
-     * Focus the SVG element after it has been selected.
-     */
     requestAnimationFrame(() => {
       selectedUnitElementRef.current?.focus();
     });
@@ -137,10 +108,6 @@ export default function BuildingExplorer({
   function handleClosePanel() {
     setSelectedUnit(null);
 
-    /*
-     * Remove the apartment from the URL,
-     * but keep the other filters.
-     */
     void setFilters({
       njesia: null,
     });
@@ -148,26 +115,19 @@ export default function BuildingExplorer({
 
   return (
     <>
-      <UnitFilters
-        floorsCount={building.floorsCount ?? 0}
-      />
+      <UnitFilters floorsCount={building.floorsCount ?? 0} />
 
       <div className="mb-6 flex items-center justify-between">
         <p className="text-sm text-gray-600">
-          <strong>{filteredUnits.length}</strong>{" "}
-          {filteredUnits.length === 1
-            ? "njësi përputhet"
-            : "njësi përputhen"}
+          {t("matchingUnits", { count: filteredUnits.length })}
         </p>
       </div>
 
       {building.facadeImage?.asset?.url && (
         <FacadeOverlay
-          buildingTitle={building.title ?? "Building"}
+          buildingTitle={building.title ?? t("buildingAlt")}
           facadeImage={building.facadeImage}
-          facadeViewBox={
-            building.facadeViewBox ?? "0 0 1600 900"
-          }
+          facadeViewBox={building.facadeViewBox ?? "0 0 1600 900"}
           units={units}
           visibleUnitIds={visibleUnitIds}
           selectedUnit={visibleSelectedUnit}
@@ -183,54 +143,59 @@ export default function BuildingExplorer({
         onSelectUnit={handleSelectUnit}
         visibleUnitIds={visibleUnitIds}
       />
+
       <div className="sr-only">
-  <table>
-    <caption>Lista e njësive në {building.title ?? "objektin"}</caption>
-    <thead>
-      <tr>
-        <th scope="col">Njësia</th>
-        <th scope="col">Kati</th>
-        <th scope="col">Dhoma</th>
-        <th scope="col">Sipërfaqja</th>
-        <th scope="col">Statusi</th>
-      </tr>
-    </thead>
+        <table>
+          <caption>
+            {t("unitsTable", {
+              building: building.title ?? t("objectFallback"),
+            })}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{t("unit")}</th>
+              <th scope="col">{t("floor")}</th>
+              <th scope="col">{t("rooms")}</th>
+              <th scope="col">{t("area")}</th>
+              <th scope="col">{t("status")}</th>
+            </tr>
+          </thead>
 
-    <tbody>
-      {filteredUnits.map((unit) => (
-        <tr key={unit._id}>
-          <td>
-            <button
-              type="button"
-              onClick={() => handleSelectUnit(unit)}
-              disabled={unit.status === "i_shitur"}
-            >
-              {unit.code ?? "Pa kod"}
-            </button>
-          </td>
+          <tbody>
+            {filteredUnits.map((unit) => (
+              <tr key={unit._id}>
+                <td>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectUnit(unit)}
+                    disabled={unit.status === "i_shitur"}
+                  >
+                    {unit.code ?? t("noCode")}
+                  </button>
+                </td>
 
-          <td>
-            {unit.floor === 0
-              ? "Përdhesë"
-              : unit.floor !== null
-                ? `Kati ${unit.floor}`
-                : "—"}
-          </td>
+                <td>
+                  {formatFloorLabel(unit.floor, {
+                    ground: tFloor("ground"),
+                    n: (n) => tFloor("n", { n }),
+                  })}
+                </td>
 
-          <td>{unit.rooms ?? "—"}</td>
+                <td>{unit.rooms ?? "—"}</td>
 
-          <td>
-            {unit.areaNet !== null && unit.areaNet !== undefined
-              ? `${unit.areaNet} m²`
-              : "—"}
-          </td>
+                <td>
+                  {unit.areaNet !== null && unit.areaNet !== undefined
+                    ? `${unit.areaNet} m²`
+                    : "—"}
+                </td>
 
-          <td>{getStatusLabel(unit.status)}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+                <td>{tStatus(unitStatusKey(unit.status))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <UnitPanel
         unit={visibleSelectedUnit}
         onClose={handleClosePanel}

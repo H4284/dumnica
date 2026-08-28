@@ -1,10 +1,14 @@
+import { getTranslations } from "next-intl/server";
+
 import type { HomePageQueryResult } from "@/sanity.types";
 
 type AboutProps = {
   homePage: NonNullable<HomePageQueryResult>;
 };
 
-export default function About({ homePage }: AboutProps) {
+export default async function About({ homePage }: AboutProps) {
+  const t = await getTranslations("home");
+
   return (
     <section>
       <div>
@@ -16,7 +20,7 @@ export default function About({ homePage }: AboutProps) {
       {homePage.aboutImage?.asset?.url && (
         <img
           src={homePage.aboutImage.asset.url}
-          alt={homePage.aboutTitle || "About Dumnica"}
+          alt={homePage.aboutTitle || t("aboutImageAlt")}
         />
       )}
     </section>

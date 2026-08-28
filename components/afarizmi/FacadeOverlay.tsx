@@ -6,6 +6,7 @@ import {
   TransformComponent,
   TransformWrapper,
 } from "react-zoom-pan-pinch";
+import { useTranslations } from "next-intl";
 
 import SvgOverlay from "./SvgOverlay";
 
@@ -13,6 +14,8 @@ import type {
   BuildingBySlugQueryResult,
   UnitsByBuildingQueryResult,
 } from "@/sanity.types";
+
+import { unitStatusKey } from "@/lib/statusKeys";
 
 type Building = NonNullable<BuildingBySlugQueryResult>;
 type Unit = UnitsByBuildingQueryResult[number];
@@ -31,19 +34,6 @@ type Props = {
   ) => void;
 };
 
-function getStatusLabel(status: Unit["status"]) {
-  switch (status) {
-    case "i_lire":
-      return "I lirë";
-    case "i_rezervuar":
-      return "I rezervuar";
-    case "i_shitur":
-      return "I shitur";
-    default:
-      return "Pa status";
-  }
-}
-
 export default function FacadeOverlay({
   buildingTitle,
   facadeImage,
@@ -54,6 +44,8 @@ export default function FacadeOverlay({
   onSelectUnit,
   onUnitElementReady,
 }: Props) {
+  const t = useTranslations("afarizmi");
+  const tStatus = useTranslations("unitStatus");
   const [hoveredUnit, setHoveredUnit] = useState<Unit | null>(null);
 
   const imageUrl = facadeImage.asset?.url;
@@ -118,12 +110,14 @@ export default function FacadeOverlay({
                   </p>
 
                   <p>
-                    {hoveredUnit.rooms ?? "-"} dhoma ·{" "}
-                    {hoveredUnit.areaNet ?? "-"} m²
+                    {hoveredUnit.rooms != null
+                      ? t("roomsShort", { count: hoveredUnit.rooms })
+                      : "—"}{" "}
+                    · {hoveredUnit.areaNet ?? "-"} m²
                   </p>
 
                   <p>
-                    {getStatusLabel(hoveredUnit.status)}
+                    {tStatus(unitStatusKey(hoveredUnit.status))}
                   </p>
                 </div>
               )}
@@ -132,24 +126,24 @@ export default function FacadeOverlay({
         </TransformWrapper>
 
         <div className="pointer-events-none absolute bottom-3 right-3 z-20 rounded-md bg-black/70 px-3 py-2 text-xs text-white sm:hidden">
-          Pinch për zoom · Zvarrit për lëvizje
+          {t("pinchHint")}
         </div>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <div className="flex items-center gap-2">
           <span className="h-4 w-4 rounded bg-green-500/50" />
-          <span>I lirë</span>
+          <span>{tStatus("free")}</span>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="h-4 w-4 rounded bg-amber-500/50" />
-          <span>I rezervuar</span>
+          <span>{tStatus("reserved")}</span>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="h-4 w-4 rounded bg-gray-500/50" />
-          <span>I shitur</span>
+          <span>{tStatus("sold")}</span>
         </div>
       </div>
     </section>

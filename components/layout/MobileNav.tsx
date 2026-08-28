@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+
 import LanguageSwitch from "@/components/layout/LanguageSwitch";
+import { Link } from "@/i18n/navigation";
 
 type MobileNavProps = {
-    locale: string;
-    whatsapp?: string | null;
-  };
+  whatsapp?: string | null;
+};
 
-export default function MobileNav({ locale, whatsapp }: MobileNavProps) {
+export default function MobileNav({ whatsapp }: MobileNavProps) {
+  const t = useTranslations("nav");
+  const tCommon = useTranslations("common");
   const [isOpen, setIsOpen] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -63,50 +66,52 @@ export default function MobileNav({ locale, whatsapp }: MobileNavProps) {
 
   return (
     <div className="mobile-nav">
-    <button
-      ref={buttonRef}
-      type="button"
-      className="mobile-menu-button"
-      aria-label={isOpen ? "Close menu" : "Open menu"}
-      aria-expanded={isOpen}
-      aria-controls="mobile-menu"
-      onClick={() => setIsOpen((open) => !open)}
-    >
-      {isOpen ? "✕" : "☰"}
-    </button>
-  
-    {isOpen && (
-      <div
-        ref={menuRef}
-        id="mobile-menu"
-        className="mobile-menu"
-        role="dialog"
-        aria-modal="true"
+      <button
+        ref={buttonRef}
+        type="button"
+        className="mobile-menu-button"
+        aria-label={isOpen ? t("closeMenu") : t("openMenu")}
+        aria-expanded={isOpen}
+        aria-controls="mobile-menu"
+        onClick={() => setIsOpen((open) => !open)}
       >
-      <nav aria-label="Mobile navigation">
-  <Link href={`/${locale}/afarizmi`} onClick={closeMenu}>
-    Afarizmi
-  </Link>
+        {isOpen ? "✕" : "☰"}
+      </button>
 
-  <Link href={`/${locale}/projects`} onClick={closeMenu}>
-    Projects
-  </Link>
+      {isOpen && (
+        <div
+          ref={menuRef}
+          id="mobile-menu"
+          className="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+        >
+          <nav aria-label={t("mobile")}>
+            <Link href="/afarizmi" onClick={closeMenu}>
+              {t("afarizmi")}
+            </Link>
 
-  <div onClick={closeMenu}>
-    <LanguageSwitch locale={locale} />
-  </div>
+            <Link href="/projects" onClick={closeMenu}>
+              {t("projects")}
+            </Link>
 
-  {whatsapp && (
-    <a
-      href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}
-      onClick={closeMenu}
-    >
-      WhatsApp
-    </a>
-  )}
-</nav>
-      </div>
-    )}
-  </div>
+            <div onClick={closeMenu}>
+              <Suspense fallback={null}>
+                <LanguageSwitch />
+              </Suspense>
+            </div>
+
+            {whatsapp && (
+              <a
+                href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}
+                onClick={closeMenu}
+              >
+                {tCommon("whatsapp")}
+              </a>
+            )}
+          </nav>
+        </div>
+      )}
+    </div>
   );
 }

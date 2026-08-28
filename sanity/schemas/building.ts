@@ -8,7 +8,7 @@ export default defineType({
     defineField({
       name: "title",
       title: "Titulli",
-      type: "string",
+      type: "localeString",
       validation: (Rule) =>
         Rule.required().error("Titulli është i detyrueshëm."),
     }),
@@ -18,7 +18,7 @@ export default defineType({
       title: "Slug",
       type: "slug",
       options: {
-        source: "title",
+        source: "title.sq",
       },
       validation: (Rule) =>
         Rule.required().error("Slug është i detyrueshëm."),
@@ -75,9 +75,17 @@ export default defineType({
 
   preview: {
     select: {
+      titleSq: "title.sq",
       title: "title",
-      subtitle: "project.title",
+      subtitle: "project.title.sq",
       media: "facadeImage",
+    },
+    prepare({ titleSq, title, subtitle, media }) {
+      return {
+        title: titleSq || (typeof title === "string" ? title : "Untitled"),
+        subtitle,
+        media,
+      };
     },
   },
 });

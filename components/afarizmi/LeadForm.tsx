@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { submitLead } from "@/app/actions/submitLead";
 
@@ -16,17 +17,15 @@ type FormState = {
   message: string;
 };
 
-const initialForm: FormState = {
-  name: "",
-  phone: "",
-  email: "",
-  message: "",
-};
-
 export default function LeadForm({ unitCode, onClose }: Props) {
+  const t = useTranslations("lead");
+  const locale = useLocale();
+
   const [form, setForm] = useState<FormState>({
-    ...initialForm,
-    message: `Përshëndetje, jam i interesuar për njësinë ${unitCode}.`,
+    name: "",
+    phone: "",
+    email: "",
+    message: t("defaultMessage", { code: unitCode }),
   });
 
   const [error, setError] = useState("");
@@ -65,6 +64,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
         phone: form.phone,
         email: form.email,
         message: form.message,
+        locale,
       });
 
       if (!result.success) {
@@ -80,7 +80,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
 
       setSuccess(true);
     } catch {
-      setError("Diçka shkoi keq. Ju lutem provoni përsëri.");
+      setError(t("genericError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -90,11 +90,11 @@ export default function LeadForm({ unitCode, onClose }: Props) {
     return (
       <div className="rounded-xl bg-green-50 p-6 text-center">
         <h3 className="text-lg font-semibold text-green-800">
-          Faleminderit!
+          {t("thanks")}
         </h3>
 
         <p className="mt-2 text-sm text-green-700">
-          Kërkesa juaj për njësinë {unitCode} u dërgua me sukses.
+          {t("success", { code: unitCode })}
         </p>
 
         <button
@@ -102,26 +102,20 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           onClick={onClose}
           className="mt-5 rounded-lg bg-black px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800"
         >
-          Mbyll
+          {t("close")}
         </button>
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4"
-      noValidate
-    >
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div className="mb-2">
         <h3 className="text-lg font-semibold text-primary">
-          Interesohem për {unitCode}
+          {t("title", { code: unitCode })}
         </h3>
 
-        <p className="mt-1 text-sm text-secondary">
-          Plotësoni të dhënat tuaja dhe do t&apos;ju kontaktojmë.
-        </p>
+        <p className="mt-1 text-sm text-secondary">{t("hint")}</p>
       </div>
 
       <div>
@@ -129,7 +123,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           htmlFor="lead-name"
           className="mb-1.5 block text-sm font-medium text-primary"
         >
-          Emri
+          {t("name")}
         </label>
 
         <input
@@ -141,7 +135,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           required
           autoComplete="name"
           className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
-          placeholder="Emri dhe mbiemri"
+          placeholder={t("namePlaceholder")}
         />
       </div>
 
@@ -150,7 +144,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           htmlFor="lead-phone"
           className="mb-1.5 block text-sm font-medium text-primary"
         >
-          Telefoni
+          {t("phone")}
         </label>
 
         <input
@@ -162,7 +156,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           required
           autoComplete="tel"
           className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
-          placeholder="+383 44 123 456"
+          placeholder={t("phonePlaceholder")}
         />
       </div>
 
@@ -171,8 +165,8 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           htmlFor="lead-email"
           className="mb-1.5 block text-sm font-medium text-primary"
         >
-          Email{" "}
-          <span className="text-secondary">(opsionale)</span>
+          {t("email")}{" "}
+          <span className="text-secondary">{t("optional")}</span>
         </label>
 
         <input
@@ -183,7 +177,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           onChange={handleChange}
           autoComplete="email"
           className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
-          placeholder="email@example.com"
+          placeholder={t("emailPlaceholder")}
         />
       </div>
 
@@ -192,7 +186,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           htmlFor="lead-message"
           className="mb-1.5 block text-sm font-medium text-primary"
         >
-          Mesazhi
+          {t("message")}
         </label>
 
         <textarea
@@ -219,7 +213,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
         disabled={isSubmitting}
         className="w-full rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isSubmitting ? "Duke dërguar..." : "Dërgo kërkesën"}
+        {isSubmitting ? t("submitting") : t("submit")}
       </button>
     </form>
   );

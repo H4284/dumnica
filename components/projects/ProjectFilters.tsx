@@ -1,69 +1,69 @@
 "use client";
 
 import { parseAsString, useQueryState } from "nuqs";
+import { useTranslations } from "next-intl";
 
-const statuses = [
-  { value: "construction", label: "Në ndërtim" },
-  { value: "finished", label: "I përfunduar" },
-  { value: "coming-soon", label: "Së shpejti" },
-];
+const statusValues = ["construction", "finished", "coming-soon"] as const;
 
-type ProjectFiltersProps = {
-  cities: string[];
+export type CityOption = {
+  key: string;
+  label: string;
 };
 
-export default function ProjectFilters({
-  cities,
-}: ProjectFiltersProps) {
+type ProjectFiltersProps = {
+  cities: CityOption[];
+};
+
+export default function ProjectFilters({ cities }: ProjectFiltersProps) {
+  const t = useTranslations("projects");
+  const tStatus = useTranslations("projectStatus");
   const [city, setCity] = useQueryState(
     "city",
     parseAsString.withDefault("").withOptions({
       shallow: false,
-    })
+    }),
   );
 
   const [status, setStatus] = useQueryState(
     "status",
     parseAsString.withDefault("").withOptions({
       shallow: false,
-    })
+    }),
   );
 
   return (
     <div>
       <label>
-        City
+        {t("city")}
 
         <select
           value={city}
-          onChange={(event) =>
-            setCity(event.target.value || null)
-          }
+          onChange={(event) => setCity(event.target.value || null)}
         >
-          <option value="">All cities</option>
+          <option value="">{t("allCities")}</option>
 
-          {cities.map((cityName) => (
-            <option key={cityName} value={cityName}>
-              {cityName}
+          {cities.map((cityOption) => (
+            <option key={cityOption.key} value={cityOption.key}>
+              {cityOption.label}
             </option>
           ))}
         </select>
       </label>
 
       <label>
-        Status
+        {t("status")}
 
         <select
           value={status}
-          onChange={(event) =>
-            setStatus(event.target.value || null)
-          }
+          onChange={(event) => setStatus(event.target.value || null)}
         >
-          <option value="">All statuses</option>
+          <option value="">{t("allStatuses")}</option>
 
-          {statuses.map((item) => (
-            <option key={item.value} value={item.value}>
-              {item.label}
+          {statusValues.map((item) => (
+            <option key={item} value={item}>
+              {tStatus(
+                item === "coming-soon" ? "comingSoon" : item,
+              )}
             </option>
           ))}
         </select>

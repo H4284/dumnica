@@ -1,5 +1,7 @@
 import { groq } from "next-sanity";
 
+import { loc, locList, locBlock } from "./localize";
+
 const imageWithMetadataProjection = `{
   ...,
   asset->{
@@ -17,31 +19,36 @@ const imageWithMetadataProjection = `{
 }`;
 
 export const allProjectsQuery = groq`
-  *[_type == "project"] | order(title asc) {
+  *[_type == "project"] | order(${loc("title")} asc) {
     id,
     _createdAt,
-    title,
+    "title": ${loc("title")},
     slug,
-    city,
+    "city": ${loc("city")},
+    "cityKey": coalesce(city.sq, city.en, city.de),
     status,
     mainPhoto ${imageWithMetadataProjection},
-    description,
+    "description": ${loc("description")},
     featured
   }
 `;
 
 export const projectBySlugQuery = groq`
   *[_type == "project" && slug.current == $slug][0] {
-    title,
+    "title": ${loc("title")},
     slug,
-    city,
+    "city": ${loc("city")},
+    "cityKey": coalesce(city.sq, city.en, city.de),
     status,
     mainPhoto ${imageWithMetadataProjection},
     video,
-    description,
-    specifications,
-    amenities,
-    paymentPlan,
+    "description": ${loc("description")},
+    "specifications": ${locList("specifications")},
+    "amenities": ${locList("amenities")},
+    paymentPlan[] {
+      percentage,
+      "label": ${loc("label")}
+    },
     location,
     brochure {
   asset->{
@@ -71,21 +78,20 @@ export const siteSettingsQuery = groq`
 export const pageBySlugQuery = groq`
  *[
     _type == "page" &&
-    slug.current == $slug &&
-    language == $language
+    slug.current == $slug
   ][0] {
-    title,
+    "title": ${loc("title")},
     slug,
-    body,
-    seoTitle,
-    seoDescription,
+    "body": ${locBlock("body")},
+    "seoTitle": ${loc("seoTitle")},
+    "seoDescription": ${loc("seoDescription")},
     seoImage ${imageWithMetadataProjection}
   }
 `;
 
 export const homePageQuery = groq`
   *[_type == "homePage"][0] {
-    heroTitle,
+    "heroTitle": ${loc("heroTitle")},
     heroImage {
       ...,
       asset->{
@@ -101,14 +107,14 @@ export const homePageQuery = groq`
   }
 }
     },
-    heroButtonText,
+    "heroButtonText": ${loc("heroButtonText")},
     heroButtonLink,
     yearsOfExperience,
     finishedProjects,
     apartmentsDelivered,
-    aboutTitle,
-    aboutText,
-    afarizmiIntro,
+    "aboutTitle": ${loc("aboutTitle")},
+    "aboutText": ${loc("aboutText")},
+    "afarizmiIntro": ${loc("afarizmiIntro")},
     aboutImage {
       ...,
       asset->{
@@ -127,9 +133,9 @@ export const homePageQuery = groq`
   }
 `;
 
-export const allBuildingsQuery = groq `*[_type == "building"] | order(order asc) {
+export const allBuildingsQuery = groq`*[_type == "building"] | order(order asc) {
   _id,
-  title,
+  "title": ${loc("title")},
   "slug": slug.current,
   facadeImage ${imageWithMetadataProjection},
   "total": count(*[_type == "unit" && building._ref == ^._id]),
@@ -139,7 +145,7 @@ export const allBuildingsQuery = groq `*[_type == "building"] | order(order asc)
 export const buildingBySlugQuery = groq`
   *[_type == "building" && slug.current == $slug][0] {
     _id,
-    title,
+    "title": ${loc("title")},
     "slug": slug.current,
     order,
     facadeImage ${imageWithMetadataProjection},
@@ -201,7 +207,7 @@ export const unitByBuildingAndCodeQuery = groq`
     price,
     "building": building->{
       _id,
-      title,
+      "title": ${loc("title")},
       "slug": slug.current,
       floorsCount
     }

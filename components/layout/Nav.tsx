@@ -1,28 +1,25 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 
-type NavProps = {
-  locale: string;
-};
-
-export default function Nav({ locale }: NavProps) {
+export default function Nav() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
 
   const links = [
     {
-      label: "Afarizmi",
-      href: `/${locale}/afarizmi`,
+      label: t("afarizmi"),
+      href: "/afarizmi" as const,
     },
     {
-      label: "Projects",
-      href: `/${locale}/projects`,
+      label: t("projects"),
+      href: "/projects" as const,
     },
   ];
 
   return (
-    <nav aria-label="Main navigation" className="desktop-nav">
+    <nav aria-label={t("main")} className="desktop-nav">
       {links.map((link) => {
         const isActive = pathname === link.href;
 

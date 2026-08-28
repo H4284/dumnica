@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import type { UnitsByBuildingQueryResult } from "@/sanity.types";
+import { formatFloorLabel, formatOrientation } from "@/lib/i18nLabels";
+import { unitStatusKey } from "@/lib/statusKeys";
 
 import LeadForm from "./LeadForm";
 
@@ -14,19 +17,6 @@ type Props = {
   onClose: () => void;
   whatsappNumber: string;
 };
-
-function getStatusLabel(status: Unit["status"]) {
-  switch (status) {
-    case "i_lire":
-      return "I lirë";
-    case "i_rezervuar":
-      return "I rezervuar";
-    case "i_shitur":
-      return "I shitur";
-    default:
-      return "Pa status";
-  }
-}
 
 function getStatusClass(status: Unit["status"]) {
   switch (status) {
@@ -46,6 +36,13 @@ export default function UnitPanel({
   onClose,
   whatsappNumber,
 }: Props) {
+  const t = useTranslations("unit");
+  const tAfarizmi = useTranslations("afarizmi");
+  const tFloor = useTranslations("floor");
+  const tFilters = useTranslations("filters");
+  const tStatus = useTranslations("unitStatus");
+  const tCommon = useTranslations("common");
+  const tLead = useTranslations("lead");
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const [showLeadForm, setShowLeadForm] = useState(false);
@@ -77,15 +74,13 @@ export default function UnitPanel({
     return null;
   }
 
-  const floorLabel =
-    unit.floor === 0
-      ? "Përdhesë"
-      : unit.floor !== null
-        ? `Kati ${unit.floor}`
-        : "—";
+  const floorLabel = formatFloorLabel(unit.floor, {
+    ground: tFloor("ground"),
+    n: (n) => tFloor("n", { n }),
+  });
 
   const whatsappMessage = encodeURIComponent(
-    `Përshëndetje, jam i interesuar për njësinë ${unit.code}`,
+    tLead("whatsappMessage", { code: unit.code ?? "" }),
   );
 
   const cleanWhatsappNumber = whatsappNumber.replace(/\D/g, "");
@@ -221,9 +216,7 @@ export default function UnitPanel({
             aria-hidden="true"
           />
 
-          <span className="sr-only">
-            Zvarrit poshtë për ta mbyllur
-          </span>
+          <span className="sr-only">{t("dragToClose")}</span>
         </div>
 
         <div className="p-6">
@@ -245,7 +238,7 @@ export default function UnitPanel({
               ref={closeButtonRef}
               type="button"
               onClick={handleClose}
-              aria-label="Mbyll"
+              aria-label={tCommon("close")}
               className="
                 flex h-11 w-11 shrink-0
                 items-center justify-center
@@ -267,9 +260,7 @@ export default function UnitPanel({
 
           <div className="mb-6 grid grid-cols-2 gap-3">
             <div className="rounded-lg bg-muted p-3">
-              <p className="text-xs text-secondary">
-                Dhoma
-              </p>
+              <p className="text-xs text-secondary">{tAfarizmi("rooms")}</p>
 
               <p className="mt-1 font-semibold text-primary">
                 {unit.rooms ?? "-"}
@@ -277,9 +268,7 @@ export default function UnitPanel({
             </div>
 
             <div className="rounded-lg bg-muted p-3">
-              <p className="text-xs text-secondary">
-                Neto
-              </p>
+              <p className="text-xs text-secondary">{t("net")}</p>
 
               <p className="mt-1 font-semibold text-primary">
                 {unit.areaNet ?? "-"} m²
@@ -287,9 +276,7 @@ export default function UnitPanel({
             </div>
 
             <div className="rounded-lg bg-muted p-3">
-              <p className="text-xs text-secondary">
-                Bruto
-              </p>
+              <p className="text-xs text-secondary">{t("gross")}</p>
 
               <p className="mt-1 font-semibold text-primary">
                 {unit.areaGross ?? "-"} m²
@@ -297,14 +284,15 @@ export default function UnitPanel({
             </div>
 
             <div className="rounded-lg bg-muted p-3">
-              <p className="text-xs text-secondary">
-                Orientimi
-              </p>
+              <p className="text-xs text-secondary">{t("orientation")}</p>
 
               <p className="mt-1 font-semibold text-primary">
-                {unit.orientation?.length
-                  ? unit.orientation.join(", ")
-                  : "-"}
+                {formatOrientation(unit.orientation, {
+                  east: tFilters("east"),
+                  west: tFilters("west"),
+                  north: tFilters("north"),
+                  south: tFilters("south"),
+                })}
               </p>
             </div>
           </div>
@@ -315,14 +303,14 @@ export default function UnitPanel({
                 unit.status,
               )}`}
             >
-              {getStatusLabel(unit.status)}
+              {tStatus(unitStatusKey(unit.status))}
             </span>
           </div>
 
           {floorPlanUrl && (
             <div className="mb-6">
               <p className="mb-2 text-sm font-medium text-primary">
-                Planimetria
+                {t("plan")}
               </p>
 
               <button
@@ -342,7 +330,7 @@ export default function UnitPanel({
               >
                 <Image
                   src={floorPlanUrl}
-                  alt={`Planimetria ${unit.code}`}
+                  alt={t("planAlt", { code: unit.code ?? "" })}
                   width={800}
                   height={600}
                   sizes="(max-width: 768px) 100vw, 440px"
@@ -354,7 +342,7 @@ export default function UnitPanel({
                 />
 
                 <span className="absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1.5 text-xs text-white">
-                  Zmadho planimetrinë
+                  {t("enlargePlan")}
                 </span>
               </button>
             </div>
@@ -388,7 +376,7 @@ export default function UnitPanel({
                   focus-visible:outline-black
                 "
               >
-                Interesohem
+                {t("interested")}
               </button>
 
               <a
@@ -413,7 +401,7 @@ export default function UnitPanel({
                   focus-visible:outline-green-700
                 "
               >
-                WhatsApp
+                {tCommon("whatsapp")}
               </a>
 
               {floorPlanDownloadUrl && (
@@ -441,7 +429,7 @@ export default function UnitPanel({
                     focus-visible:outline-black
                   "
                 >
-                  Shkarko planin
+                  {t("downloadPlan")}
                 </button>
               )}
             </div>

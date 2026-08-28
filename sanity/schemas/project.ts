@@ -8,7 +8,7 @@ export default defineType({
     defineField({
       name: "title",
       title: "Titulli",
-      type: "string",
+      type: "localeString",
       description: "Shkruani emrin e projektit.",
       validation: (Rule) => Rule.required().error("Titulli është i detyrueshëm."),
     }),
@@ -18,15 +18,16 @@ export default defineType({
       title: "Slug",
       type: "slug",
       description: "Adresa e faqes, p.sh. dumnica-residence.",
-      options: {source: "title"},
+      options: { source: "title.sq" },
       validation: (Rule) => Rule.required(),
     }),
 
     defineField({
       name: "city",
       title: "Qyteti",
-      type: "string",
-      description: "Shkruani qytetin ku ndodhet projekti.",
+      type: "localeString",
+      description:
+        "Emri i qytetit sipas gjuhës. Filtri në website përdor versionin shqip si vlerë të qëndrueshme.",
       validation: (Rule) => Rule.required(),
     }),
 
@@ -64,8 +65,7 @@ export default defineType({
     defineField({
       name: "description",
       title: "Përshkrimi",
-      type: "text",
-      rows: 5,
+      type: "localeText",
       description: "Shkruani një përshkrim të shkurtër të projektit.",
       validation: (Rule) => Rule.required(),
     }),
@@ -74,7 +74,7 @@ export default defineType({
       name: "specifications",
       title: "Specifikimet",
       type: "array",
-      of: [{type: "string"}],
+      of: [{ type: "localeString" }],
       description: "Shtoni specifikimet një nga një.",
     }),
 
@@ -82,7 +82,7 @@ export default defineType({
       name: "amenities",
       title: "Amenities",
       type: "array",
-      of: [{type: "string"}],
+      of: [{ type: "localeString" }],
       description: "Shtoni lehtësirat një nga një.",
     }),
 
@@ -135,7 +135,7 @@ export default defineType({
             defineField({
               name: "label",
               title: "Përshkrimi",
-              type: "string",
+              type: "localeString",
             }),
             defineField({
               name: "percentage",
@@ -150,9 +150,23 @@ export default defineType({
 
   preview: {
     select: {
+      titleSq: "title.sq",
       title: "title",
-      subtitle: "city",
+      citySq: "city.sq",
+      city: "city",
       media: "mainPhoto",
+    },
+    prepare({ titleSq, title, citySq, city, media }) {
+      const resolvedTitle =
+        titleSq || (typeof title === "string" ? title : "Untitled");
+      const resolvedCity =
+        citySq || (typeof city === "string" ? city : "");
+
+      return {
+        title: resolvedTitle,
+        subtitle: resolvedCity,
+        media,
+      };
     },
   },
   

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-
+import { useTranslations } from "next-intl";
 
 type GalleryImage = {
   asset?: {
@@ -16,6 +16,7 @@ type GalleryProps = {
 };
 
 export default function Gallery({ images, title }: GalleryProps) {
+  const t = useTranslations("projects");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const touchStartX = useRef<number | null>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -23,36 +24,36 @@ export default function Gallery({ images, title }: GalleryProps) {
   const selectedImage =
     selectedIndex !== null ? images[selectedIndex] : null;
 
-    const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-        touchStartX.current = event.touches[0].clientX;
-      };
-      
-      const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-        if (touchStartX.current === null || selectedIndex === null) {
-          return;
-        }
-      
-        const touchEndX = event.changedTouches[0].clientX;
-        const difference = touchStartX.current - touchEndX;
-      
-        const minimumSwipeDistance = 50;
-      
-        if (Math.abs(difference) >= minimumSwipeDistance) {
-          if (difference > 0) {
-            setSelectedIndex((current) =>
-              current === null ? 0 : (current + 1) % images.length,
-            );
-          } else {
-            setSelectedIndex((current) =>
-              current === null
-                ? 0
-                : (current - 1 + images.length) % images.length,
-            );
-          }
-        }
-      
-        touchStartX.current = null;
-      };
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = event.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX.current === null || selectedIndex === null) {
+      return;
+    }
+
+    const touchEndX = event.changedTouches[0].clientX;
+    const difference = touchStartX.current - touchEndX;
+
+    const minimumSwipeDistance = 50;
+
+    if (Math.abs(difference) >= minimumSwipeDistance) {
+      if (difference > 0) {
+        setSelectedIndex((current) =>
+          current === null ? 0 : (current + 1) % images.length,
+        );
+      } else {
+        setSelectedIndex((current) =>
+          current === null
+            ? 0
+            : (current - 1 + images.length) % images.length,
+        );
+      }
+    }
+
+    touchStartX.current = null;
+  };
 
   useEffect(() => {
     if (selectedIndex === null) return;
@@ -91,7 +92,7 @@ export default function Gallery({ images, title }: GalleryProps) {
   return (
     <>
       <section ref={galleryRef}>
-        <h2>Gallery</h2>
+        <h2>{t("gallery")}</h2>
 
         <div>
           {images.map(
@@ -101,7 +102,10 @@ export default function Gallery({ images, title }: GalleryProps) {
                   key={index}
                   type="button"
                   onClick={() => setSelectedIndex(index)}
-                  aria-label={`Open ${title} gallery image ${index + 1}`}
+                  aria-label={t("openGalleryImage", {
+                    index: index + 1,
+                    title,
+                  })}
                 >
                   <Image
                     src={image.asset.url}
@@ -119,16 +123,16 @@ export default function Gallery({ images, title }: GalleryProps) {
 
       {selectedImage?.asset?.url && (
         <div
-        role="dialog"
-        aria-modal="true"
-        onClick={() => setSelectedIndex(null)}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setSelectedIndex(null)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <button
             type="button"
             onClick={() => setSelectedIndex(null)}
-            aria-label="Close gallery"
+            aria-label={t("closeGallery")}
           >
             ×
           </button>
@@ -150,7 +154,7 @@ export default function Gallery({ images, title }: GalleryProps) {
                 (selectedIndex! - 1 + images.length) % images.length,
               );
             }}
-            aria-label="Previous image"
+            aria-label={t("previousImage")}
           >
             ←
           </button>
@@ -161,7 +165,7 @@ export default function Gallery({ images, title }: GalleryProps) {
               event.stopPropagation();
               setSelectedIndex((selectedIndex! + 1) % images.length);
             }}
-            aria-label="Next image"
+            aria-label={t("nextImage")}
           >
             →
           </button>
