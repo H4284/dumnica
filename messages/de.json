@@ -15,6 +15,7 @@
     "closeMenu": "Menü schließen",
     "afarizmi": "Afarizmi",
     "projects": "Projekte",
+    "contact": "Kontakt",
     "switchLanguage": "Sprache ändern"
   },
   "footer": {
@@ -188,7 +189,10 @@
     "emailInvalid": "Die E-Mail-Adresse ist ungültig.",
     "messageShort": "Die Nachricht ist zu kurz.",
     "defaultMessage": "Guten Tag, ich interessiere mich für die Einheit {code}.",
-    "whatsappMessage": "Guten Tag, ich interessiere mich für die Einheit {code}"
+    "whatsappMessage": "Guten Tag, ich interessiere mich für die Einheit {code}",
+    "honeypot": "Dieses Feld leer lassen",
+    "rateLimited": "Es wurden zu viele Nachrichten gesendet. Bitte warten Sie eine Minute und versuchen Sie es erneut.",
+    "turnstileFailed": "Bitte bestätigen Sie, dass Sie kein Roboter sind, und versuchen Sie es erneut."
   },
   "notFound": {
     "title": "404",
@@ -196,5 +200,62 @@
     "body": "Die gesuchte Seite existiert leider nicht.",
     "projects": "Projekte",
     "afarizmi": "Afarizmi"
+  },
+  "contactForm": {
+    "title": "Kontakt",
+    "intro": "Senden Sie uns eine Nachricht, wir rufen Sie zurück.",
+    "name": "Name",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "optional": "(optional)",
+    "project": "Projekt",
+    "projectPlaceholder": "Projekt wählen",
+    "noProject": "Nicht angegeben",
+    "message": "Nachricht",
+    "submit": "Nachricht senden",
+    "submitting": "Wird gesendet...",
+    "thanks": "Vielen Dank!",
+    "success": "Wir haben Ihre Nachricht erhalten und werden Sie bald kontaktieren.",
+    "checkFields": "Bitte prüfen Sie die eingegebenen Angaben.",
+    "nameRequired": "Bitte geben Sie Ihren Namen ein.",
+    "phoneRequired": "Bitte geben Sie eine Telefonnummer ein.",
+    "emailInvalid": "Die E-Mail-Adresse ist ungültig.",
+    "messageShort": "Die Nachricht ist zu kurz.",
+    "genericError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "notConfigured": "Der E-Mail-Dienst ist noch nicht konfiguriert.",
+    "sendFailed": "Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    "rateLimited": "Es wurden zu viele Nachrichten gesendet. Bitte warten Sie eine Minute und versuchen Sie es erneut.",
+    "turnstileFailed": "Bitte bestätigen Sie, dass Sie kein Roboter sind, und versuchen Sie es erneut.",
+    "honeypot": "Dieses Feld leer lassen",
+    "emailMissing": "Nicht angegeben",
+    "autoReplySubject": "Wir haben Ihre Nachricht erhalten",
+    "autoReplyHeading": "Vielen Dank für Ihre Nachricht",
+    "autoReplyHello": "Guten Tag {name},",
+    "autoReplyBody": "Wir haben Ihre Nachricht erhalten. Unser Team wird Sie bald kontaktieren.",
+    "autoReplySignoff": "Vielen Dank,"
+  },
+  "cookies": {
+    "title": "Cookies",
+    "body": "Wir verwenden Cookies für Analysen erst nach Ihrer Zustimmung. Sie können nur mit notwendigen Cookies fortfahren.",
+    "accept": "Akzeptieren",
+    "reject": "Nur notwendige"
+  },
+  "report": {
+    "title": "Lead-Bericht",
+    "intro": "Nachrichten von der Website, nach Monat gruppiert.",
+    "lockHint": "Geben Sie das Berichtskennwort ein, um die Lead-Zahlen zu sehen.",
+    "password": "Kennwort",
+    "unlock": "Bericht öffnen",
+    "wrongPassword": "Das Kennwort ist nicht korrekt.",
+    "openSheet": "Die Sicherungstabelle öffnen",
+    "byMonth": "Nach Monat",
+    "recent": "Letzte Nachrichten",
+    "empty": "In Airtable wurden noch keine Nachrichten gespeichert.",
+    "unknownMonth": "Unbekannt",
+    "date": "Datum",
+    "name": "Name",
+    "phone": "Telefon",
+    "project": "Projekt",
+    "source": "Quelle"
   }
 }

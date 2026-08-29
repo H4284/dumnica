@@ -1,32 +1,13 @@
 "use server";
 
-import { z } from "zod";
 import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
 import { hasLocale } from "next-intl";
 
 import { routing } from "@/i18n/routing";
-
-function leadSchema(t: {
-  missingCode: string;
-  nameRequired: string;
-  phoneRequired: string;
-  emailInvalid: string;
-  messageShort: string;
-}) {
-  return z.object({
-    unitCode: z.string().trim().min(1, t.missingCode),
-    name: z.string().trim().min(2, t.nameRequired),
-    phone: z.string().trim().min(8, t.phoneRequired),
-    email: z
-      .string()
-      .trim()
-      .email(t.emailInvalid)
-      .optional()
-      .or(z.literal("")),
-    message: z.string().trim().min(5, t.messageShort),
-  });
-}
+import { leadSchema } from "@/lib/formSchemas";
+import { protectForm } from "@/lib/formGuard";
+import { saveLeadBackup } from "@/lib/leadBackup";
 
 export type LeadFormState = {
   success: boolean;
@@ -45,6 +26,8 @@ export async function submitLead(data: {
   phone: string;
   email: string;
   message: string;
+  website?: string;
+  turnstileToken?: string;
   locale?: string;
 }): Promise<LeadFormState> {
   const locale = hasLocale(routing.locales, data.locale)
@@ -52,6 +35,29 @@ export async function submitLead(data: {
     : routing.defaultLocale;
 
   const t = await getTranslations({ locale, namespace: "lead" });
+
+  const protection = await protectForm({
+    honeypot: data.website,
+    turnstileToken: data.turnstileToken,
+  });
+
+  if (!protection.ok) {
+    if (protection.reason === "honeypot") {
+      return {
+        success: true,
+        message: t("success", { code: data.unitCode }),
+      };
+    }
+
+    return {
+      success: false,
+      message:
+        protection.reason === "rate_limit"
+          ? t("rateLimited")
+          : t("turnstileFailed"),
+    };
+  }
+
   const result = leadSchema({
     missingCode: t("missingCode"),
     nameRequired: t("nameRequired"),
@@ -68,7 +74,6 @@ export async function submitLead(data: {
     };
   }
 
-  // 2. Check Resend configuration
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const salesEmail =
     process.env.SALES_EMAIL?.trim() || "havajusufi05@gmail.com";
@@ -84,32 +89,27 @@ export async function submitLead(data: {
 
   const resend = new Resend(apiKey);
 
-  const {
-    unitCode,
+  const { unitCode, name, phone, email, message } = result.data;
+
+  await saveLeadBackup({
     name,
     phone,
-    email,
+    email: email || "",
+    project: unitCode,
     message,
-  } = result.data;
+    source: "unit",
+  });
 
-  /*
-   * One stable key for this exact lead.
-   *
-   * The browser already prevents double-clicks, but this gives us
-   * a second layer of protection on the email API side.
-   */
   const idempotencyKey = `lead/${unitCode}/${name}/${phone}`;
 
   try {
-    // 3. Send lead to sales
-    const { data: salesData, error: salesError } =
-      await resend.emails.send(
-        {
-          from: "Dumnica <onboarding@resend.dev>",
-          to: [salesEmail],
-          replyTo: email || undefined,
-          subject: `Interesim për njësinë ${unitCode}`,
-          html: `
+    const { data: salesData, error: salesError } = await resend.emails.send(
+      {
+        from: "Dumnica <onboarding@resend.dev>",
+        to: [salesEmail],
+        replyTo: email || undefined,
+        subject: `Interesim për njësinë ${unitCode}`,
+        html: `
             <div style="font-family: Arial, sans-serif; line-height: 1.6;">
               <h2>Interesim për njësi</h2>
 
@@ -139,11 +139,11 @@ export async function submitLead(data: {
               </p>
             </div>
           `,
-        },
-        {
-          idempotencyKey,
-        },
-      );
+      },
+      {
+        idempotencyKey,
+      },
+    );
 
     if (salesError) {
       console.error("Resend sales email error:", salesError);
@@ -156,7 +156,6 @@ export async function submitLead(data: {
 
     console.log("Sales email sent:", salesData?.id);
 
-    // 4. Send auto-reply only when visitor provided an email
     if (email) {
       const { data: autoReplyData, error: autoReplyError } =
         await resend.emails.send(
@@ -201,24 +200,12 @@ export async function submitLead(data: {
         );
 
       if (autoReplyError) {
-        /*
-         * Sales email was already sent successfully.
-         * Do not tell the visitor that the whole lead failed.
-         * Log the auto-reply error for debugging.
-         */
-        console.error(
-          "Resend auto-reply error:",
-          autoReplyError,
-        );
+        console.error("Resend auto-reply error:", autoReplyError);
       } else {
-        console.log(
-          "Auto-reply sent:",
-          autoReplyData?.id,
-        );
+        console.log("Auto-reply sent:", autoReplyData?.id);
       }
     }
 
-    // 5. Everything required succeeded
     return {
       success: true,
       message: t("success", { code: unitCode }),

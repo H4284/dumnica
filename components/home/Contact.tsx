@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 
 import type { SiteSettingsQueryResult } from "@/sanity.types";
+import TrackedExternalLink from "@/components/analytics/TrackedExternalLink";
+import { Link } from "@/i18n/navigation";
 
 type ContactProps = {
   siteSettings: NonNullable<SiteSettingsQueryResult>;
@@ -13,11 +15,19 @@ export default async function Contact({ siteSettings }: ContactProps) {
   return (
     <section>
       <h2>{t("contact")}</h2>
+      <p>
+        <Link href="/kontakti">{t("contact")}</Link>
+      </p>
 
       {siteSettings.phone && (
         <p>
           {t("phone")}:{" "}
-          <a href={`tel:${siteSettings.phone}`}>{siteSettings.phone}</a>
+          <TrackedExternalLink
+            event="phone_click"
+            href={`tel:${siteSettings.phone}`}
+          >
+            {siteSettings.phone}
+          </TrackedExternalLink>
         </p>
       )}
 
@@ -37,13 +47,14 @@ export default async function Contact({ siteSettings }: ContactProps) {
       {siteSettings.whatsapp && (
         <p>
           {tCommon("whatsapp")}:{" "}
-          <a
+          <TrackedExternalLink
+            event="whatsapp_click"
             href={`https://wa.me/${siteSettings.whatsapp.replace(/\D/g, "")}`}
             target="_blank"
             rel="noopener noreferrer"
           >
             {tCommon("whatsapp")}
-          </a>
+          </TrackedExternalLink>
         </p>
       )}
 

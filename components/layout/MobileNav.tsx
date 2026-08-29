@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import LanguageSwitch from "@/components/layout/LanguageSwitch";
+import TrackedExternalLink from "@/components/analytics/TrackedExternalLink";
 import { Link } from "@/i18n/navigation";
 
 type MobileNavProps = {
@@ -95,6 +96,10 @@ export default function MobileNav({ whatsapp }: MobileNavProps) {
               {t("projects")}
             </Link>
 
+            <Link href="/kontakti" onClick={closeMenu}>
+              {t("contact")}
+            </Link>
+
             <div onClick={closeMenu}>
               <Suspense fallback={null}>
                 <LanguageSwitch />
@@ -102,12 +107,13 @@ export default function MobileNav({ whatsapp }: MobileNavProps) {
             </div>
 
             {whatsapp && (
-              <a
+              <TrackedExternalLink
+                event="whatsapp_click"
                 href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`}
                 onClick={closeMenu}
               >
                 {tCommon("whatsapp")}
-              </a>
+              </TrackedExternalLink>
             )}
           </nav>
         </div>

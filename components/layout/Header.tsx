@@ -5,6 +5,7 @@ import type { SiteSettingsQueryResult } from "@/sanity.types";
 import Nav from "@/components/layout/Nav";
 import MobileNav from "@/components/layout/MobileNav";
 import LanguageSwitch from "@/components/layout/LanguageSwitch";
+import TrackedExternalLink from "@/components/analytics/TrackedExternalLink";
 import { Link } from "@/i18n/navigation";
 
 type HeaderProps = {
@@ -29,11 +30,12 @@ export default async function Header({ siteSettings }: HeaderProps) {
           </Suspense>
 
           {siteSettings?.whatsapp && (
-            <a
+            <TrackedExternalLink
+              event="whatsapp_click"
               href={`https://wa.me/${siteSettings.whatsapp.replace(/\D/g, "")}`}
             >
               {t("whatsapp")}
-            </a>
+            </TrackedExternalLink>
           )}
         </div>
       </div>

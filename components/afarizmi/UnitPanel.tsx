@@ -10,6 +10,7 @@ import { formatEuroPrice, hasUnitPrice } from "@/lib/seo";
 import { unitStatusKey } from "@/lib/statusKeys";
 
 import LeadForm from "./LeadForm";
+import TrackedExternalLink from "@/components/analytics/TrackedExternalLink";
 
 type Unit = UnitsByBuildingQueryResult[number];
 
@@ -391,7 +392,8 @@ export default function UnitPanel({
                 {t("interested")}
               </button>
 
-              <a
+              <TrackedExternalLink
+                event="whatsapp_click"
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
@@ -414,7 +416,7 @@ export default function UnitPanel({
                 "
               >
                 {tCommon("whatsapp")}
-              </a>
+              </TrackedExternalLink>
 
               {floorPlanDownloadUrl && (
                 <button

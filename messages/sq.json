@@ -15,6 +15,7 @@
     "closeMenu": "Mbyll menunë",
     "afarizmi": "Afarizmi",
     "projects": "Projektet",
+    "contact": "Kontakt",
     "switchLanguage": "Ndrysho gjuhën"
   },
   "footer": {
@@ -188,7 +189,10 @@
     "emailInvalid": "Email-i nuk është valid.",
     "messageShort": "Mesazhi është shumë i shkurtër.",
     "defaultMessage": "Përshëndetje, jam i interesuar për njësinë {code}.",
-    "whatsappMessage": "Përshëndetje, jam i interesuar për njësinë {code}"
+    "whatsappMessage": "Përshëndetje, jam i interesuar për njësinë {code}",
+    "honeypot": "Lëreni këtë fushë bosh",
+    "rateLimited": "Janë dërguar shumë mesazhe. Ju lutem prisni një minutë dhe provoni përsëri.",
+    "turnstileFailed": "Ju lutem konfirmoni që nuk jeni robot dhe provoni përsëri."
   },
   "notFound": {
     "title": "404",
@@ -196,5 +200,62 @@
     "body": "Na vjen keq, por faqja që po kërkon nuk ekziston.",
     "projects": "Projektet",
     "afarizmi": "Afarizmi"
+  },
+  "contactForm": {
+    "title": "Kontakt",
+    "intro": "Na dërgoni një mesazh dhe ne do t'ju telefonojmë.",
+    "name": "Emri",
+    "phone": "Telefoni",
+    "email": "Email",
+    "optional": "(opsionale)",
+    "project": "Projekti",
+    "projectPlaceholder": "Zgjidhni një projekt",
+    "noProject": "Nuk është zgjedhur",
+    "message": "Mesazhi",
+    "submit": "Dërgo mesazhin",
+    "submitting": "Duke dërguar...",
+    "thanks": "Faleminderit!",
+    "success": "E morëm mesazhin tuaj dhe do t'ju kontaktojmë së shpejti.",
+    "checkFields": "Ju lutem kontrolloni të dhënat që keni shkruar.",
+    "nameRequired": "Ju lutem shkruani emrin tuaj.",
+    "phoneRequired": "Ju lutem shkruani një numër telefoni.",
+    "emailInvalid": "Email-i nuk është valid.",
+    "messageShort": "Mesazhi është shumë i shkurtër.",
+    "genericError": "Ndodhi një gabim. Ju lutem provoni përsëri.",
+    "notConfigured": "Shërbimi i email-it nuk është konfiguruar ende.",
+    "sendFailed": "Nuk mundëm ta dërgojmë mesazhin. Ju lutem provoni përsëri.",
+    "rateLimited": "Janë dërguar shumë mesazhe. Ju lutem prisni një minutë dhe provoni përsëri.",
+    "turnstileFailed": "Ju lutem konfirmoni që nuk jeni robot dhe provoni përsëri.",
+    "honeypot": "Lëreni këtë fushë bosh",
+    "emailMissing": "Nuk është dhënë",
+    "autoReplySubject": "E morëm mesazhin tuaj",
+    "autoReplyHeading": "Faleminderit për mesazhin",
+    "autoReplyHello": "Përshëndetje {name},",
+    "autoReplyBody": "E kemi pranuar mesazhin tuaj. Ekipi ynë do t'ju kontaktojë së shpejti.",
+    "autoReplySignoff": "Faleminderit,"
+  },
+  "cookies": {
+    "title": "Cookies",
+    "body": "Ne përdorim cookies për analitikë vetëm pasi të pranoni. Mund të vazhdoni vetëm me cookies e nevojshme.",
+    "accept": "Pranoj",
+    "reject": "Vetëm të nevojshmet"
+  },
+  "report": {
+    "title": "Raporti i kërkesave",
+    "intro": "Mesazhet e marra nga website, të grupuara sipas muajit.",
+    "lockHint": "Shkruani fjalëkalimin për të parë numrat e kërkesave.",
+    "password": "Fjalëkalimi",
+    "unlock": "Hap raportin",
+    "wrongPassword": "Fjalëkalimi nuk është i saktë.",
+    "openSheet": "Hap tabelën rezervë",
+    "byMonth": "Sipas muajit",
+    "recent": "Mesazhet e fundit",
+    "empty": "Nuk ka ende mesazhe të ruajtura në Airtable.",
+    "unknownMonth": "I panjohur",
+    "date": "Data",
+    "name": "Emri",
+    "phone": "Telefoni",
+    "project": "Projekti",
+    "source": "Burimi"
   }
 }

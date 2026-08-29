@@ -1,6 +1,6 @@
 "use client";
 
-import { track } from "@vercel/analytics";
+import { trackSiteEvent } from "@/components/analytics/trackEvent";
 import { useTranslations } from "next-intl";
 
 type BrochureDownloadProps = {
@@ -11,7 +11,7 @@ export default function BrochureDownload({ url }: BrochureDownloadProps) {
   const t = useTranslations("projects");
 
   const handleDownload = () => {
-    track("brochure_download");
+    trackSiteEvent("brochure_download");
   };
 
   return (

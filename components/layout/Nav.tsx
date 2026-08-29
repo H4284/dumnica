@@ -16,6 +16,10 @@ export default function Nav() {
       label: t("projects"),
       href: "/projects" as const,
     },
+    {
+      label: t("contact"),
+      href: "/kontakti" as const,
+    },
   ];
 
   return (

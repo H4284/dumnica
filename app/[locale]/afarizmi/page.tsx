@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import BuildingPicker from "@/components/afarizmi/BuildingPicker";
 import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import JsonLd from "@/components/seo/JsonLd";
+import PageEvent from "@/components/analytics/PageEvent";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import type { AppLocale } from "@/i18n/routing";
 import { getAllBuildings, getHomePage } from "@/sanity/lib/client";
@@ -50,6 +51,7 @@ export default async function AfarizmiPage({ params }: AfarizmiPageProps) {
 
   return (
     <main>
+      <PageEvent event="afarizmi_open" />
       <JsonLd
         data={breadcrumbJsonLd(locale, [
           { name: tCommon("home"), href: "/" },

@@ -16,6 +16,7 @@ import {
 import { unitStatusKey } from "@/lib/statusKeys";
 import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import JsonLd from "@/components/seo/JsonLd";
+import PageEvent from "@/components/analytics/PageEvent";
 import {
   getAllUnits,
   getUnitByBuildingAndCode,
@@ -191,6 +192,7 @@ export default async function UnitPage({ params }: Props) {
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-10">
+      <PageEvent event="unit_view" />
       <JsonLd data={jsonLd} />
 
       <Breadcrumbs

@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import type { SiteSettingsQueryResult } from "@/sanity.types";
 import { Link } from "@/i18n/navigation";
+import TrackedExternalLink from "@/components/analytics/TrackedExternalLink";
 
 type FooterProps = {
   siteSettings: SiteSettingsQueryResult;
@@ -25,7 +26,13 @@ export default async function Footer({ siteSettings }: FooterProps) {
 
           {siteSettings?.phone && (
             <p>
-              {t("phone")}: {siteSettings.phone}
+              {t("phone")}:{" "}
+              <TrackedExternalLink
+                event="phone_click"
+                href={`tel:${siteSettings.phone}`}
+              >
+                {siteSettings.phone}
+              </TrackedExternalLink>
             </p>
           )}
 
@@ -45,6 +52,7 @@ export default async function Footer({ siteSettings }: FooterProps) {
         <nav>
           <Link href="/afarizmi">{tNav("afarizmi")}</Link>
           <Link href="/projects">{tNav("projects")}</Link>
+          <Link href="/kontakti">{tNav("contact")}</Link>
         </nav>
 
         <div>

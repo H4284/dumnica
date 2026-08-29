@@ -1,14 +1,14 @@
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Analytics } from "@vercel/analytics/react";
-import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
-
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { ConsentProvider } from "@/components/analytics/ConsentProvider";
+import CookieBanner from "@/components/analytics/CookieBanner";
+import TrackingScripts from "@/components/analytics/TrackingScripts";
 import { getSiteSettings } from "@/sanity/lib/client";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getSiteUrl } from "@/lib/seo";
@@ -70,19 +70,21 @@ export default async function LocaleLayout({
     >
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider messages={messages}>
-          <a href="#main-content" className="skip-link">
-            {t("skipToContent")}
-          </a>
+          <ConsentProvider>
+            <a href="#main-content" className="skip-link">
+              {t("skipToContent")}
+            </a>
 
-          <Header siteSettings={siteSettings} />
+            <Header siteSettings={siteSettings} />
 
-          <NuqsAdapter>
-            <main id="main-content">{children}</main>
-          </NuqsAdapter>
+            <NuqsAdapter>
+              <main id="main-content">{children}</main>
+            </NuqsAdapter>
 
-          <Footer siteSettings={siteSettings} />
-
-          <Analytics />
+            <Footer siteSettings={siteSettings} />
+            <CookieBanner />
+            <TrackingScripts />
+          </ConsentProvider>
         </NextIntlClientProvider>
       </body>
     </html>

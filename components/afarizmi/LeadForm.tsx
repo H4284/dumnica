@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { submitLead } from "@/app/actions/submitLead";
+import { trackSiteEvent } from "@/components/analytics/trackEvent";
+import HoneypotField from "@/components/forms/HoneypotField";
+import TurnstileWidget from "@/components/forms/TurnstileWidget";
+import { leadSchema } from "@/lib/formSchemas";
 
 type Props = {
   unitCode: string;
@@ -15,6 +19,7 @@ type FormState = {
   phone: string;
   email: string;
   message: string;
+  website: string;
 };
 
 export default function LeadForm({ unitCode, onClose }: Props) {
@@ -26,11 +31,17 @@ export default function LeadForm({ unitCode, onClose }: Props) {
     phone: "",
     email: "",
     message: t("defaultMessage", { code: unitCode }),
+    website: "",
   });
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleToken = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
 
   function handleChange(
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -54,6 +65,24 @@ export default function LeadForm({ unitCode, onClose }: Props) {
       return;
     }
 
+    const parsed = leadSchema({
+      missingCode: t("missingCode"),
+      nameRequired: t("nameRequired"),
+      phoneRequired: t("phoneRequired"),
+      emailInvalid: t("emailInvalid"),
+      messageShort: t("messageShort"),
+    }).safeParse({ ...form, unitCode });
+
+    if (!parsed.success) {
+      const firstFieldError =
+        parsed.error.flatten().fieldErrors.name?.[0] ??
+        parsed.error.flatten().fieldErrors.phone?.[0] ??
+        parsed.error.flatten().fieldErrors.email?.[0] ??
+        parsed.error.flatten().fieldErrors.message?.[0];
+      setError(firstFieldError ?? t("checkFields"));
+      return;
+    }
+
     setError("");
     setIsSubmitting(true);
 
@@ -64,6 +93,8 @@ export default function LeadForm({ unitCode, onClose }: Props) {
         phone: form.phone,
         email: form.email,
         message: form.message,
+        website: form.website,
+        turnstileToken,
         locale,
       });
 
@@ -79,6 +110,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
       }
 
       setSuccess(true);
+      trackSiteEvent("form_submit");
     } catch {
       setError(t("genericError"));
     } finally {
@@ -109,7 +141,14 @@ export default function LeadForm({ unitCode, onClose }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+    <form onSubmit={handleSubmit} className="relative space-y-4" noValidate>
+      <HoneypotField
+        label={t("honeypot")}
+        value={form.website}
+        onChange={(value) =>
+          setForm((current) => ({ ...current, website: value }))
+        }
+      />
       <div className="mb-2">
         <h3 className="text-lg font-semibold text-primary">
           {t("title", { code: unitCode })}
@@ -198,6 +237,8 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           className="w-full resize-none rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
         />
       </div>
+
+      <TurnstileWidget onToken={handleToken} />
 
       {error && (
         <div

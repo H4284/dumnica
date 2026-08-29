@@ -15,6 +15,7 @@
     "closeMenu": "Close menu",
     "afarizmi": "Afarizmi",
     "projects": "Projects",
+    "contact": "Contact",
     "switchLanguage": "Change language"
   },
   "footer": {
@@ -188,7 +189,10 @@
     "emailInvalid": "The email address is not valid.",
     "messageShort": "The message is too short.",
     "defaultMessage": "Hello, I am interested in unit {code}.",
-    "whatsappMessage": "Hello, I am interested in unit {code}"
+    "whatsappMessage": "Hello, I am interested in unit {code}",
+    "honeypot": "Leave this field empty",
+    "rateLimited": "Too many messages were sent. Please wait a minute and try again.",
+    "turnstileFailed": "Please confirm you are not a robot and try again."
   },
   "notFound": {
     "title": "404",
@@ -196,5 +200,62 @@
     "body": "Sorry, the page you are looking for does not exist.",
     "projects": "Projects",
     "afarizmi": "Afarizmi"
+  },
+  "contactForm": {
+    "title": "Contact",
+    "intro": "Send us a message and we will call you back.",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "optional": "(optional)",
+    "project": "Project",
+    "projectPlaceholder": "Choose a project",
+    "noProject": "Not specified",
+    "message": "Message",
+    "submit": "Send message",
+    "submitting": "Sending...",
+    "thanks": "Thank you!",
+    "success": "We received your message and will contact you soon.",
+    "checkFields": "Please check the information you entered.",
+    "nameRequired": "Please enter your name.",
+    "phoneRequired": "Please enter a phone number.",
+    "emailInvalid": "The email address is not valid.",
+    "messageShort": "The message is too short.",
+    "genericError": "Something went wrong. Please try again.",
+    "notConfigured": "The email service is not configured yet.",
+    "sendFailed": "We could not send the message. Please try again.",
+    "rateLimited": "Too many messages were sent. Please wait a minute and try again.",
+    "turnstileFailed": "Please confirm you are not a robot and try again.",
+    "honeypot": "Leave this field empty",
+    "emailMissing": "Not provided",
+    "autoReplySubject": "We received your message",
+    "autoReplyHeading": "Thank you for your message",
+    "autoReplyHello": "Hello {name},",
+    "autoReplyBody": "We have received your message. Our team will contact you soon.",
+    "autoReplySignoff": "Thank you,"
+  },
+  "cookies": {
+    "title": "Cookies",
+    "body": "We use cookies for analytics only after you accept. You can continue with essential cookies only.",
+    "accept": "Accept",
+    "reject": "Essential only"
+  },
+  "report": {
+    "title": "Lead report",
+    "intro": "Messages received from the website, grouped by month.",
+    "lockHint": "Enter the report password to see lead numbers.",
+    "password": "Password",
+    "unlock": "Open report",
+    "wrongPassword": "The password is not correct.",
+    "openSheet": "Open the backup spreadsheet",
+    "byMonth": "By month",
+    "recent": "Recent messages",
+    "empty": "No messages have been saved in Airtable yet.",
+    "unknownMonth": "Unknown",
+    "date": "Date",
+    "name": "Name",
+    "phone": "Phone",
+    "project": "Project",
+    "source": "Source"
   }
 }
