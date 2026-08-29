@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import type { UnitsByBuildingQueryResult } from "@/sanity.types";
 import { formatFloorLabel, formatOrientation } from "@/lib/i18nLabels";
+import { formatEuroPrice, hasUnitPrice } from "@/lib/seo";
 import { unitStatusKey } from "@/lib/statusKeys";
 
 import LeadForm from "./LeadForm";
@@ -43,6 +44,7 @@ export default function UnitPanel({
   const tStatus = useTranslations("unitStatus");
   const tCommon = useTranslations("common");
   const tLead = useTranslations("lead");
+  const locale = useLocale();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const [showLeadForm, setShowLeadForm] = useState(false);
@@ -293,6 +295,16 @@ export default function UnitPanel({
                   north: tFilters("north"),
                   south: tFilters("south"),
                 })}
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-muted p-3">
+              <p className="text-xs text-secondary">{t("price")}</p>
+
+              <p className="mt-1 font-semibold text-primary">
+                {hasUnitPrice(unit.price)
+                  ? formatEuroPrice(unit.price, locale)
+                  : t("priceOnRequest")}
               </p>
             </div>
           </div>

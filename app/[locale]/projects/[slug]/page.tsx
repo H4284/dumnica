@@ -1,14 +1,16 @@
 import { getAllProjects, getProjectBySlug } from "@/sanity/lib/client";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import Gallery from "@/components/projects/Gallery";
 import LocationMap from "@/components/projects/LocationMap";
 import BrochureDownload from "@/components/projects/BrochureDownload";
-import { formatDate } from "@/i18n/routing";
-import { routing } from "@/i18n/routing";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import JsonLd from "@/components/seo/JsonLd";
+import { formatDate, routing, type AppLocale } from "@/i18n/routing";
 import { projectStatusKey } from "@/lib/statusKeys";
+import { absoluteUrl, breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 type ProjectPageProps = {
   params: Promise<{
@@ -34,26 +36,44 @@ export async function generateMetadata({
   params,
 }: ProjectPageProps): Promise<Metadata> {
   const { slug, locale } = await params;
-  const project = await getProjectBySlug(slug, locale);
+  setRequestLocale(locale as AppLocale);
+
+  const [project, t] = await Promise.all([
+    getProjectBySlug(slug, locale),
+    getTranslations("projects"),
+  ]);
+  const href = `/projects/${slug}`;
 
   if (!project) {
-    return {
-      title: "Project not found | Dumnica",
-      description: "Project not found.",
-    };
+    return pageMetadata({
+      locale,
+      href,
+      title: t("title"),
+      description: t("empty"),
+    });
   }
 
-  return {
-    title: `${project.title} | Dumnica`,
-    description:
-      project.description ||
-      `Mësoni më shumë për projektin ${project.title}.`,
-  };
+  const title = project.title || project.slug?.current || t("title");
+  const description =
+    project.description ||
+    [project.title, project.city].filter(Boolean).join(" — ") ||
+    title;
+
+  return pageMetadata({
+    locale,
+    href,
+    title,
+    description,
+    image: project.mainPhoto?.asset?.url,
+  });
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug, locale } = await params;
+  setRequestLocale(locale as AppLocale);
+
   const t = await getTranslations("projects");
+  const tCommon = await getTranslations("common");
   const tStatus = await getTranslations("projectStatus");
   const project = await getProjectBySlug(slug, locale);
 
@@ -62,9 +82,55 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   const statusKey = projectStatusKey(project.status);
+  const href = `/projects/${slug}`;
+  const title = project.title || project.slug?.current || t("title");
+
+  const crumbs = [
+    { href: "/", label: tCommon("home") },
+    { href: "/projects", label: t("title") },
+    { label: title },
+  ];
+
+  const jsonLd = [
+    {
+      "@type": "ApartmentComplex",
+      name: title,
+      url: absoluteUrl(locale, href),
+      ...(project.description ? { description: project.description } : {}),
+      ...(project.mainPhoto?.asset?.url
+        ? { image: project.mainPhoto.asset.url }
+        : {}),
+      ...(project.city
+        ? {
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: project.city,
+            },
+          }
+        : {}),
+      ...(project.location
+        ? {
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: project.location.lat,
+              longitude: project.location.lng,
+            },
+          }
+        : {}),
+    },
+    breadcrumbJsonLd(locale, [
+      { name: tCommon("home"), href: "/" },
+      { name: t("title"), href: "/projects" },
+      { name: title, href },
+    ]),
+  ];
 
   return (
     <main>
+      <JsonLd data={jsonLd} />
+
+      <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
+
       {project.mainPhoto?.asset?.url && (
         <section>
           <Image

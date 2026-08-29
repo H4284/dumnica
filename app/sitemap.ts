@@ -1,57 +1,53 @@
 import type { MetadataRoute } from "next";
 
-import { getAllUnits } from "@/sanity/lib/client";
-
-const baseUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://dumnicagroup.com";
+import { routing } from "@/i18n/routing";
+import { absoluteUrl } from "@/lib/seo";
+import {
+  getAllBuildings,
+  getAllPageSlugs,
+  getAllProjects,
+  getAllUnits,
+} from "@/sanity/lib/client";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const units = await getAllUnits();
+  const [projects, buildings, units, pages] = await Promise.all([
+    getAllProjects(),
+    getAllBuildings(),
+    getAllUnits(),
+    getAllPageSlugs(),
+  ]);
 
-  const staticUrls: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}/sq`,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/en`,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/sq/afarizmi`,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/en/afarizmi`,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/sq/projects`,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/en/projects`,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-  ];
+  const hrefs = new Set<string>(["/", "/projects", "/afarizmi"]);
 
-  const unitUrls: MetadataRoute.Sitemap = units
-    .filter((unit) => unit.code && unit.buildingSlug)
-    .flatMap((unit) =>
-      ["sq", "en"].map((locale) => ({
-        url: `${baseUrl}/${locale}/afarizmi/${unit.buildingSlug}/${encodeURIComponent(
-          unit.code!
-        )}`,
-        changeFrequency: "daily" as const,
-        priority: 0.8,
-      }))
-    );
+  for (const project of projects) {
+    if (project.slug?.current) {
+      hrefs.add(`/projects/${project.slug.current}`);
+    }
+  }
 
-  return [...staticUrls, ...unitUrls];
+  for (const building of buildings) {
+    if (building.slug) {
+      hrefs.add(`/afarizmi/${building.slug}`);
+    }
+  }
+
+  for (const unit of units) {
+    if (unit.code && unit.buildingSlug) {
+      hrefs.add(`/afarizmi/${unit.buildingSlug}/${unit.code}`);
+    }
+  }
+
+  for (const page of pages) {
+    if (page.slug) {
+      hrefs.add(`/${page.slug}`);
+    }
+  }
+
+  return [...hrefs].flatMap((href) =>
+    routing.locales.map((locale) => ({
+      url: absoluteUrl(locale, href),
+      changeFrequency: href.includes("/afarizmi/") ? "daily" as const : "weekly" as const,
+      priority: href === "/" ? 1 : 0.8,
+    })),
+  );
 }

@@ -4,7 +4,9 @@
     "close": "Close",
     "loading": "Loading...",
     "brand": "Dumnica",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "home": "Home",
+    "breadcrumb": "Breadcrumb"
   },
   "nav": {
     "main": "Main navigation",
@@ -156,7 +158,9 @@
     "similarUnits": "See similar units",
     "openExplorer": "View in the interactive explorer",
     "dragToClose": "Swipe down to close",
-    "interested": "I’m interested"
+    "interested": "I’m interested",
+    "price": "Price",
+    "priceOnRequest": "Price on request"
   },
   "lead": {
     "title": "I’m interested in {code}",

@@ -4,7 +4,9 @@
     "close": "Mbyll",
     "loading": "Duke u ngarkuar...",
     "brand": "Dumnica",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "home": "Ballina",
+    "breadcrumb": "Shtegu i navigimit"
   },
   "nav": {
     "main": "Navigimi kryesor",
@@ -156,7 +158,9 @@
     "similarUnits": "Shiko njësi të ngjashme",
     "openExplorer": "Shiko në eksploruesin interaktiv",
     "dragToClose": "Zvarrit poshtë për ta mbyllur",
-    "interested": "Interesohem"
+    "interested": "Interesohem",
+    "price": "Çmimi",
+    "priceOnRequest": "Çmimi me kërkesë"
   },
   "lead": {
     "title": "Interesohem për {code}",

@@ -111,3 +111,9 @@ export async function getUnitByBuildingAndCode(
 export async function getAllUnits(): Promise<AllUnitsQueryResult> {
   return client.fetch(allUnitsQuery);
 }
+
+export async function getAllPageSlugs(): Promise<Array<{ slug: string }>> {
+  return client.fetch(
+    `*[_type == "page" && defined(slug.current)]{ "slug": slug.current }`,
+  );
+}

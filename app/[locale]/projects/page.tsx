@@ -1,7 +1,12 @@
-import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import ProjectCard from "@/components/projects/ProjectCard";
 import ProjectFilters from "@/components/projects/ProjectFilters";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import JsonLd from "@/components/seo/JsonLd";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+import type { AppLocale } from "@/i18n/routing";
 import { getAllProjects } from "@/sanity/lib/client";
 
 type ProjectsPageProps = {
@@ -14,12 +19,36 @@ type ProjectsPageProps = {
   }>;
 };
 
+export async function generateMetadata({
+  params,
+}: ProjectsPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  setRequestLocale(locale as AppLocale);
+
+  const [t, projects] = await Promise.all([
+    getTranslations("projects"),
+    getAllProjects(locale),
+  ]);
+
+  const title = t("title");
+
+  return pageMetadata({
+    locale,
+    href: "/projects",
+    title,
+    description: t("count", { count: projects.length }),
+  });
+}
+
 export default async function ProjectsPage({
   params,
   searchParams,
 }: ProjectsPageProps) {
   const { locale } = await params;
+  setRequestLocale(locale as AppLocale);
+
   const t = await getTranslations("projects");
+  const tCommon = await getTranslations("common");
   const projects = await getAllProjects(locale);
   const filters = await searchParams;
 
@@ -46,8 +75,22 @@ export default async function ProjectsPage({
     return matchesCity && matchesStatus;
   });
 
+  const crumbs = [
+    { href: "/", label: tCommon("home") },
+    { label: t("title") },
+  ];
+
   return (
     <main>
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [
+          { name: tCommon("home"), href: "/" },
+          { name: t("title"), href: "/projects" },
+        ])}
+      />
+
+      <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
+
       <h1>{t("title")}</h1>
 
       <ProjectFilters cities={cities} />

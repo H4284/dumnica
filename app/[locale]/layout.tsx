@@ -5,11 +5,13 @@ import { notFound } from "next/navigation";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Analytics } from "@vercel/analytics/react";
 import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getSiteSettings } from "@/sanity/lib/client";
-import { routing } from "@/i18n/routing";
+import { routing, type AppLocale } from "@/i18n/routing";
+import { getSiteUrl } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +34,17 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+export async function generateMetadata({
+  params,
+}: LocaleLayoutProps): Promise<Metadata> {
+  const { locale } = await params;
+  setRequestLocale(locale as AppLocale);
+
+  return {
+    metadataBase: new URL(getSiteUrl()),
+  };
+}
+
 export default async function LocaleLayout({
   children,
   params,
@@ -42,7 +55,7 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  setRequestLocale(locale);
+  setRequestLocale(locale as AppLocale);
 
   const [messages, siteSettings, t] = await Promise.all([
     getMessages(),

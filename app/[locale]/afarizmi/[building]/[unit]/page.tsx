@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
 import type { AllUnitsQueryResult } from "@/sanity.types";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
+import { routing, type AppLocale } from "@/i18n/routing";
 import { formatFloorLabel, formatOrientation } from "@/lib/i18nLabels";
+import {
+  absoluteUrl,
+  breadcrumbJsonLd,
+  formatEuroPrice,
+  hasUnitPrice,
+  pageMetadata,
+} from "@/lib/seo";
 import { unitStatusKey } from "@/lib/statusKeys";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import JsonLd from "@/components/seo/JsonLd";
 import {
   getAllUnits,
   getUnitByBuildingAndCode,
@@ -41,59 +50,70 @@ export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
   const { building, unit, locale } = await params;
+  setRequestLocale(locale as AppLocale);
 
-  const currentUnit = await getUnitByBuildingAndCode(building, unit, locale);
+  const [currentUnit, t, tAfarizmi, tFloor, tStatus] = await Promise.all([
+    getUnitByBuildingAndCode(building, unit, locale),
+    getTranslations("unit"),
+    getTranslations("afarizmi"),
+    getTranslations("floor"),
+    getTranslations("unitStatus"),
+  ]);
+
+  const href = `/afarizmi/${building}/${unit}`;
 
   if (!currentUnit) {
-    return {
-      title: "Njësia nuk u gjet | Dumnica Group",
-    };
+    return pageMetadata({
+      locale,
+      href,
+      title: t("codeTitle", { code: unit }),
+      description: t("codeTitle", { code: unit }),
+    });
   }
 
-  const buildingTitle = currentUnit.building?.title ?? "Dumnica Group";
   const unitCode = currentUnit.code ?? unit;
-
-  const roomsText = currentUnit.rooms
-    ? `${currentUnit.rooms} dhomëshe`
-    : "Banesë";
-
-  const areaText = currentUnit.areaNet
-    ? `${currentUnit.areaNet}m²`
-    : "";
-
-  const floorText =
-    currentUnit.floor === 0
-      ? "Përdhesë"
-      : currentUnit.floor
-        ? `Kati ${currentUnit.floor}`
-        : "";
-
-  const title = `${roomsText}, ${areaText} — ${buildingTitle}, ${floorText} | Dumnica Group`;
+  const title = t("codeTitle", { code: unitCode });
+  const floorLabel = formatFloorLabel(currentUnit.floor, {
+    ground: tFloor("ground"),
+    n: (n) => tFloor("n", { n }),
+  });
+  const priceLabel = hasUnitPrice(currentUnit.price)
+    ? formatEuroPrice(currentUnit.price, locale)
+    : t("priceOnRequest");
 
   const description = [
-    currentUnit.rooms ? `${currentUnit.rooms} dhoma` : null,
-    currentUnit.areaNet ? `${currentUnit.areaNet}m² sipërfaqe neto` : null,
-    floorText,
-    currentUnit.orientation?.length
-      ? `Orientim: ${currentUnit.orientation.join(", ")}`
+    currentUnit.building?.title,
+    currentUnit.rooms != null
+      ? tAfarizmi("roomsShort", { count: currentUnit.rooms })
       : null,
+    currentUnit.areaNet ? `${currentUnit.areaNet} m²` : null,
+    floorLabel,
+    tStatus(unitStatusKey(currentUnit.status)),
+    `${t("price")}: ${priceLabel}`,
   ]
     .filter(Boolean)
-    .join(", ");
+    .join(" · ");
 
-  return {
+  return pageMetadata({
+    locale,
+    href,
     title,
-    description: description || `Njësia ${unitCode} në ${buildingTitle}.`,
-  };
+    description,
+    image: currentUnit.floorPlanImage?.asset?.url,
+  });
 }
 
 export default async function UnitPage({ params }: Props) {
   const { building, unit, locale } = await params;
+  setRequestLocale(locale as AppLocale);
+
   const t = await getTranslations("unit");
   const tAfarizmi = await getTranslations("afarizmi");
+  const tNav = await getTranslations("nav");
   const tFloor = await getTranslations("floor");
   const tFilters = await getTranslations("filters");
   const tStatus = await getTranslations("unitStatus");
+  const tCommon = await getTranslations("common");
 
   const currentUnit = await getUnitByBuildingAndCode(building, unit, locale);
 
@@ -101,62 +121,86 @@ export default async function UnitPage({ params }: Props) {
     notFound();
   }
 
-  const buildingTitle = currentUnit.building?.title ?? "Dumnica Group";
+  const buildingTitle =
+    currentUnit.building?.title ||
+    currentUnit.building?.slug ||
+    building;
   const unitCode = currentUnit.code ?? unit;
+  const href = `/afarizmi/${building}/${unitCode}`;
+  const buildingHref = `/afarizmi/${building}`;
 
   const floorLabel = formatFloorLabel(currentUnit.floor, {
     ground: tFloor("ground"),
     n: (n) => tFloor("n", { n }),
   });
   const statusLabel = tStatus(unitStatusKey(currentUnit.status));
+  const priceLabel = hasUnitPrice(currentUnit.price)
+    ? formatEuroPrice(currentUnit.price, locale)
+    : t("priceOnRequest");
 
   const availability =
     currentUnit.status === "i_shitur"
       ? "https://schema.org/SoldOut"
       : currentUnit.status === "i_rezervuar"
         ? "https://schema.org/LimitedAvailability"
-        : "https://schema.org/InStock";
+        : currentUnit.status === "i_lire"
+          ? "https://schema.org/InStock"
+          : undefined;
 
   const interactiveUrl = `/afarizmi/${building}?njesia=${encodeURIComponent(
     unitCode,
   )}`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Accommodation",
-    name: `${buildingTitle} — ${unitCode}`,
-    identifier: unitCode,
-    numberOfRooms: currentUnit.rooms ?? undefined,
-    floorSize: currentUnit.areaNet
+  const offer = {
+    "@type": "Offer",
+    url: absoluteUrl(locale, href),
+    ...(availability ? { availability } : {}),
+    ...(hasUnitPrice(currentUnit.price)
       ? {
-          "@type": "QuantitativeValue",
-          value: currentUnit.areaNet,
-          unitCode: "MTK",
+          price: currentUnit.price,
+          priceCurrency: "EUR",
         }
-      : undefined,
-    floor:
-      currentUnit.floor !== null
-        ? String(currentUnit.floor)
-        : undefined,
-    offers: {
-      "@type": "Offer",
-      availability,
-      ...(currentUnit.price !== null
-        ? {
-            price: currentUnit.price,
-            priceCurrency: "EUR",
-          }
-        : {}),
-    },
+      : {}),
   };
+
+  const jsonLd = [
+    {
+      "@type": "Accommodation",
+      name: `${buildingTitle} — ${unitCode}`,
+      identifier: unitCode,
+      url: absoluteUrl(locale, href),
+      numberOfRooms: currentUnit.rooms ?? undefined,
+      floorSize: currentUnit.areaNet
+        ? {
+            "@type": "QuantitativeValue",
+            value: currentUnit.areaNet,
+            unitCode: "MTK",
+          }
+        : undefined,
+      floor:
+        currentUnit.floor !== null ? String(currentUnit.floor) : undefined,
+      offers: offer,
+    },
+    breadcrumbJsonLd(locale, [
+      { name: tCommon("home"), href: "/" },
+      { name: tNav("afarizmi"), href: "/afarizmi" },
+      { name: buildingTitle, href: buildingHref },
+      { name: unitCode, href },
+    ]),
+  ];
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd),
-        }}
+      <JsonLd data={jsonLd} />
+
+      <Breadcrumbs
+        items={[
+          { href: "/", label: tCommon("home") },
+          { href: "/afarizmi", label: tNav("afarizmi") },
+          { href: buildingHref, label: buildingTitle },
+          { label: unitCode },
+        ]}
+        label={tCommon("breadcrumb")}
       />
 
       <header className="mb-10 text-primary">
@@ -225,6 +269,11 @@ export default async function UnitPage({ params }: Props) {
                 ? t("commercial")
                 : "—"}
           </p>
+        </div>
+
+        <div>
+          <h2 className="text-sm text-secondary">{t("price")}</h2>
+          <p className="text-xl font-semibold text-primary">{priceLabel}</p>
         </div>
       </section>
 
