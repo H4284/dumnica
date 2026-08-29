@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { AllUnitsQueryResult } from "@/sanity.types";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -221,14 +222,14 @@ export default async function UnitPage({ params }: Props) {
 
       <section className="grid gap-6 rounded-xl border border-border bg-surface p-6 text-primary sm:grid-cols-2">
         <div>
-          <h2 className="text-sm text-secondary">{tAfarizmi("rooms")}</h2>
+          <p className="text-sm text-secondary">{tAfarizmi("rooms")}</p>
           <p className="text-xl font-semibold text-primary">
             {currentUnit.rooms ?? "—"}
           </p>
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">{t("netArea")}</h2>
+          <p className="text-sm text-secondary">{t("netArea")}</p>
           <p className="text-xl font-semibold text-primary">
             {currentUnit.areaNet
               ? `${currentUnit.areaNet} m²`
@@ -237,7 +238,7 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">{t("grossArea")}</h2>
+          <p className="text-sm text-secondary">{t("grossArea")}</p>
           <p className="text-xl font-semibold text-primary">
             {currentUnit.areaGross
               ? `${currentUnit.areaGross} m²`
@@ -246,12 +247,12 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">{tAfarizmi("floor")}</h2>
+          <p className="text-sm text-secondary">{tAfarizmi("floor")}</p>
           <p className="text-xl font-semibold text-primary">{floorLabel}</p>
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">{t("orientation")}</h2>
+          <p className="text-sm text-secondary">{t("orientation")}</p>
           <p className="text-xl font-semibold text-primary">
             {formatOrientation(currentUnit.orientation, {
               east: tFilters("east"),
@@ -263,7 +264,7 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">{t("type")}</h2>
+          <p className="text-sm text-secondary">{t("type")}</p>
           <p className="text-xl font-semibold text-primary">
             {currentUnit.unitType === "banesor"
               ? t("residential")
@@ -274,7 +275,7 @@ export default async function UnitPage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="text-sm text-secondary">{t("price")}</h2>
+          <p className="text-sm text-secondary">{t("price")}</p>
           <p className="text-xl font-semibold text-primary">{priceLabel}</p>
         </div>
       </section>
@@ -285,10 +286,19 @@ export default async function UnitPage({ params }: Props) {
             {t("plan")}
           </h2>
 
-          <img
+          <Image
             src={currentUnit.floorPlanImage.asset.url}
             alt={t("planAlt", { code: unitCode })}
-            className="w-full rounded-lg"
+            width={
+              currentUnit.floorPlanImage.asset.metadata?.dimensions?.width ??
+              1600
+            }
+            height={
+              currentUnit.floorPlanImage.asset.metadata?.dimensions?.height ??
+              2263
+            }
+            sizes="(max-width: 1024px) 100vw, 1024px"
+            className="w-full rounded-lg h-auto"
           />
         </section>
       )}

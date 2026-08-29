@@ -9,9 +9,13 @@ import { projectStatusKey } from "@/lib/statusKeys";
 
 type ProjectCardProps = {
   project: AllProjectsQueryResult[number];
+  heading?: "h2" | "h3";
 };
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+export default function ProjectCard({
+  project,
+  heading: Heading = "h2",
+}: ProjectCardProps) {
   const t = useTranslations("projects");
   const tStatus = useTranslations("projectStatus");
   const imageUrl = project.mainPhoto?.asset?.url;
@@ -45,7 +49,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             </span>
           )}
 
-          <h2>{project.title}</h2>
+          <Heading>{project.title}</Heading>
 
           {project.city && <p>{project.city}</p>}
 

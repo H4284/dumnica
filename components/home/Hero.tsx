@@ -22,17 +22,20 @@ export default function Hero({ homePage }: HeroProps) {
   return (
     <section>
       {imageUrl && (
-        <Image
-          src={imageUrl}
-          alt={homePage.heroTitle || "Dumnica"}
-          width={1600}
-          height={900}
-          priority
-          sizes="100vw"
-        />
+        <div className="relative aspect-[16/9] w-full overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={homePage.heroTitle || "Dumnica"}
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
       )}
 
-      {homePage.heroTitle && <h1>{homePage.heroTitle}</h1>}
+      <h1>{homePage.heroTitle || "Dumnica"}</h1>
 
       {homePage.heroButtonText && buttonLink && (
         isExternal ? (

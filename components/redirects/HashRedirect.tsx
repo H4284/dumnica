@@ -6,8 +6,10 @@ import { useRouter } from "@/i18n/navigation";
 
 const hashMap: Record<string, string> = {
   "#/": "/",
+  "#/afarizmi": "/afarizmi",
   "#/afarizmi/A1": "/afarizmi",
   "#/projects": "/projects",
+  "#/projektet": "/projects",
   "#/afarizmi/page/99": "/afarizmi/dumnica-residence?njesia=A-3-12",
 };
 

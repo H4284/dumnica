@@ -21,10 +21,11 @@ export default async function FeaturedProjects({
 
       <div className="projects-grid">
         {featuredProjects.map((project) => (
-          <ProjectCard
-            key={project.slug?.current}
-            project={project}
-          />
+            <ProjectCard
+              key={project.slug?.current}
+              project={project}
+              heading="h3"
+            />
         ))}
       </div>
     </section>

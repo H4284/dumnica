@@ -71,10 +71,11 @@ export default function LocationMap({
         <iframe
           src={mapUrl}
           title={t("mapTitle")}
-          width="100%"
-          height="450"
+          width={800}
+          height={450}
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
+          className="aspect-video w-full max-w-[800px]"
           style={{ border: 0 }}
           allowFullScreen
         />

@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import { ConsentProvider } from "@/components/analytics/ConsentProvider";
 import CookieBanner from "@/components/analytics/CookieBanner";
 import TrackingScripts from "@/components/analytics/TrackingScripts";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getSiteSettings } from "@/sanity/lib/client";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getSiteUrl } from "@/lib/seo";
@@ -84,6 +85,7 @@ export default async function LocaleLayout({
             <Footer siteSettings={siteSettings} />
             <CookieBanner />
             <TrackingScripts />
+            <SpeedInsights />
           </ConsentProvider>
         </NextIntlClientProvider>
       </body>

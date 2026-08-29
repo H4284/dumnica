@@ -14,6 +14,20 @@ const nextConfig: NextConfig = {
     ],
     formats: ["image/avif", "image/webp"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/veranda-27",
+        destination: "/projects",
+        permanent: true,
+      },
+      {
+        source: "/veranda-27/",
+        destination: "/projects",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
