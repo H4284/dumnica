@@ -50,32 +50,34 @@ export default async function AfarizmiPage({ params }: AfarizmiPageProps) {
   const title = tNav("afarizmi");
 
   return (
-    <main>
-      <PageEvent event="afarizmi_open" />
-      <JsonLd
-        data={breadcrumbJsonLd(locale, [
-          { name: tCommon("home"), href: "/" },
-          { name: title, href: "/afarizmi" },
-        ])}
-      />
+    <div className="page-shell">
+      <div className="site-container pb-20">
+        <PageEvent event="afarizmi_open" />
+        <JsonLd
+          data={breadcrumbJsonLd(locale, [
+            { name: tCommon("home"), href: "/" },
+            { name: title, href: "/afarizmi" },
+          ])}
+        />
 
-      <Breadcrumbs
-        items={[
-          { href: "/", label: tCommon("home") },
-          { label: title },
-        ]}
-        label={tCommon("breadcrumb")}
-      />
+        <Breadcrumbs
+          items={[
+            { href: "/", label: tCommon("home") },
+            { label: title },
+          ]}
+          label={tCommon("breadcrumb")}
+        />
 
-      <section>
-        <h1>{title}</h1>
+        <header className="pb-10 pt-4">
+          <h1 className="page-title">{title}</h1>
 
-        {homePage?.afarizmiIntro && (
-          <p>{homePage.afarizmiIntro}</p>
-        )}
+          {homePage?.afarizmiIntro && (
+            <p className="page-lede">{homePage.afarizmiIntro}</p>
+          )}
+        </header>
 
         <BuildingPicker buildings={buildings} />
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }

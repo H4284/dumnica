@@ -11,33 +11,34 @@ export default async function Numbers({ homePage }: NumbersProps) {
   const t = await getTranslations("home");
   const locale = await getLocale();
 
+  const items = [
+    {
+      value: homePage.yearsOfExperience,
+      label: t("yearsOfExperience"),
+    },
+    {
+      value: homePage.finishedProjects,
+      label: t("finishedProjects"),
+    },
+    {
+      value: homePage.apartmentsDelivered,
+      label: t("apartmentsDelivered"),
+    },
+  ];
+
   return (
-    <section>
-      <div>
-        <strong>
-          {homePage.yearsOfExperience != null
-            ? formatNumber(homePage.yearsOfExperience, locale)
-            : null}
-        </strong>
-        <span>{t("yearsOfExperience")}</span>
-      </div>
-
-      <div>
-        <strong>
-          {homePage.finishedProjects != null
-            ? formatNumber(homePage.finishedProjects, locale)
-            : null}
-        </strong>
-        <span>{t("finishedProjects")}</span>
-      </div>
-
-      <div>
-        <strong>
-          {homePage.apartmentsDelivered != null
-            ? formatNumber(homePage.apartmentsDelivered, locale)
-            : null}
-        </strong>
-        <span>{t("apartmentsDelivered")}</span>
+    <section className="numbers-band section">
+      <div className="site-container numbers-grid">
+        {items.map((item) => (
+          <div key={item.label}>
+            <strong>
+              {item.value != null ? formatNumber(item.value, locale) : null}
+            </strong>
+            <span className="mt-3 block text-sm tracking-wide text-dark-muted">
+              {item.label}
+            </span>
+          </div>
+        ))}
       </div>
     </section>
   );

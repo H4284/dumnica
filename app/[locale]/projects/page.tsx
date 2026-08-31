@@ -81,34 +81,40 @@ export default async function ProjectsPage({
   ];
 
   return (
-    <main>
-      <JsonLd
-        data={breadcrumbJsonLd(locale, [
-          { name: tCommon("home"), href: "/" },
-          { name: t("title"), href: "/projects" },
-        ])}
-      />
+    <div className="page-shell">
+      <div className="site-container pb-20">
+        <JsonLd
+          data={breadcrumbJsonLd(locale, [
+            { name: tCommon("home"), href: "/" },
+            { name: t("title"), href: "/projects" },
+          ])}
+        />
 
-      <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
+        <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
 
-      <h1>{t("title")}</h1>
+        <header className="pt-4 pb-2">
+          <h1 className="page-title">{t("title")}</h1>
+        </header>
 
-      <ProjectFilters cities={cities} />
+        <ProjectFilters cities={cities} />
 
-      <p>{t("count", { count: filteredProjects.length })}</p>
+        <p className="mb-10 text-secondary">
+          {t("count", { count: filteredProjects.length })}
+        </p>
 
-      {filteredProjects.length === 0 ? (
-        <p>{t("empty")}</p>
-      ) : (
-        <div className="projects-grid">
-          {filteredProjects.map((project) => (
-            <ProjectCard
-              key={project.slug?.current}
-              project={project}
-            />
-          ))}
-        </div>
-      )}
-    </main>
+        {filteredProjects.length === 0 ? (
+          <p>{t("empty")}</p>
+        ) : (
+          <div className="projects-grid">
+            {filteredProjects.map((project) => (
+              <ProjectCard
+                key={project.slug?.current}
+                project={project}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

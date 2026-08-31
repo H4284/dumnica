@@ -23,7 +23,7 @@ export default function LocationMap({
   const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}&output=embed`;
 
   return (
-    <section>
+    <section className="detail-section">
       <h2>{t("location")}</h2>
 
       {!showMap ? (

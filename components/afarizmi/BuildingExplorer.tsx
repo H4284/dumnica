@@ -118,7 +118,7 @@ export default function BuildingExplorer({
       <UnitFilters floorsCount={building.floorsCount ?? 0} />
 
       <div className="mb-6 flex items-center justify-between">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-secondary">
           {t("matchingUnits", { count: filteredUnits.length })}
         </p>
       </div>
@@ -200,6 +200,7 @@ export default function BuildingExplorer({
         unit={visibleSelectedUnit}
         onClose={handleClosePanel}
         whatsappNumber={whatsappNumber}
+        buildingSlug={building.slug ?? ""}
       />
     </>
   );

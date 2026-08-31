@@ -93,7 +93,7 @@ export default async function HomePage({ params }: HomePageProps) {
   ];
 
   return (
-    <main>
+    <>
       <JsonLd data={jsonLd} />
 
       <Hero homePage={homePage} />
@@ -107,6 +107,6 @@ export default async function HomePage({ params }: HomePageProps) {
       <Contact siteSettings={siteSettings} />
 
       <HashRedirect />
-    </main>
+    </>
   );
 }

@@ -136,7 +136,7 @@ export default function ContactForm({ projects }: ContactFormProps) {
           onChange={handleChange}
           required
           autoComplete="name"
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5"
+          className="field-input"
         />
         {fieldErrors.name?.[0] && (
           <p className="mt-1 text-sm text-red-700">{fieldErrors.name[0]}</p>
@@ -155,7 +155,7 @@ export default function ContactForm({ projects }: ContactFormProps) {
           onChange={handleChange}
           required
           autoComplete="tel"
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5"
+          className="field-input"
         />
         {fieldErrors.phone?.[0] && (
           <p className="mt-1 text-sm text-red-700">{fieldErrors.phone[0]}</p>
@@ -173,7 +173,7 @@ export default function ContactForm({ projects }: ContactFormProps) {
           value={form.email}
           onChange={handleChange}
           autoComplete="email"
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5"
+          className="field-input"
         />
         {fieldErrors.email?.[0] && (
           <p className="mt-1 text-sm text-red-700">{fieldErrors.email[0]}</p>
@@ -189,7 +189,7 @@ export default function ContactForm({ projects }: ContactFormProps) {
           name="project"
           value={form.project}
           onChange={handleChange}
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5"
+          className="field-select"
         >
           <option value="">{t("projectPlaceholder")}</option>
           {projects.map((project) => (
@@ -210,7 +210,7 @@ export default function ContactForm({ projects }: ContactFormProps) {
           value={form.message}
           onChange={handleChange}
           rows={5}
-          className="w-full resize-none rounded-lg border border-border bg-surface px-3 py-2.5"
+          className="field-textarea"
         />
         {fieldErrors.message?.[0] && (
           <p className="mt-1 text-sm text-red-700">{fieldErrors.message[0]}</p>
@@ -228,7 +228,7 @@ export default function ContactForm({ projects }: ContactFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? t("submitting") : t("submit")}
       </button>

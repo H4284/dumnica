@@ -70,8 +70,8 @@ export default function FloorSelector({
             onKeyDown={(event) => handleKeyDown(event, floor)}
             className={`rounded-md px-4 py-2 text-left text-sm transition-colors ${
               isActive
-                ? "bg-black text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-primary text-dark-text"
+                : "bg-muted text-primary hover:bg-border"
             }`}
           >
             {floor === 0 ? t("ground") : t("n", { n: floor })}

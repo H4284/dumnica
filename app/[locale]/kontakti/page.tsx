@@ -35,18 +35,20 @@ export default async function ContactPage({ params }: ContactPageProps) {
   ]);
 
   return (
-    <main className="mx-auto w-full max-w-xl px-4 py-10">
-      <h1 className="mb-2 text-3xl font-bold">{t("title")}</h1>
-      <p className="mb-8 text-secondary">{t("intro")}</p>
+    <div className="page-shell">
+      <div className="site-container max-w-xl pb-20">
+        <h1 className="page-title mb-3">{t("title")}</h1>
+        <p className="page-lede mb-10">{t("intro")}</p>
 
-      <ContactForm
-        projects={projects
-          .filter((project) => project.slug?.current && project.title)
-          .map((project) => ({
-            slug: project.slug!.current!,
-            title: project.title!,
-          }))}
-      />
-    </main>
+        <ContactForm
+          projects={projects
+            .filter((project) => project.slug?.current && project.title)
+            .map((project) => ({
+              slug: project.slug!.current!,
+              title: project.title!,
+            }))}
+        />
+      </div>
+    </div>
   );
 }

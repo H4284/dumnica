@@ -11,82 +11,57 @@ type ContactProps = {
 export default async function Contact({ siteSettings }: ContactProps) {
   const t = await getTranslations("home");
   const tCommon = await getTranslations("common");
+  const tNav = await getTranslations("nav");
 
   return (
-    <section>
-      <h2>{t("contact")}</h2>
-      <p>
-        <Link href="/kontakti">{t("contact")}</Link>
-      </p>
+    <section className="contact-cta section">
+      <div className="site-container contact-cta-grid">
+        <div>
+          <p className="section-kicker">{t("contact")}</p>
+          <h2 className="section-title">{t("contact")}</h2>
+          <div className="mt-6 space-y-2 text-secondary">
+            {siteSettings.phone && (
+              <p>
+                {t("phone")}:{" "}
+                <TrackedExternalLink
+                  event="phone_click"
+                  href={`tel:${siteSettings.phone}`}
+                >
+                  {siteSettings.phone}
+                </TrackedExternalLink>
+              </p>
+            )}
+            {siteSettings.email && (
+              <p>
+                {t("email")}:{" "}
+                <a href={`mailto:${siteSettings.email}`}>{siteSettings.email}</a>
+              </p>
+            )}
+            {siteSettings.address && (
+              <p>
+                {t("address")}: {siteSettings.address}
+              </p>
+            )}
+          </div>
+        </div>
 
-      {siteSettings.phone && (
-        <p>
-          {t("phone")}:{" "}
-          <TrackedExternalLink
-            event="phone_click"
-            href={`tel:${siteSettings.phone}`}
-          >
-            {siteSettings.phone}
-          </TrackedExternalLink>
-        </p>
-      )}
-
-      {siteSettings.email && (
-        <p>
-          {t("email")}:{" "}
-          <a href={`mailto:${siteSettings.email}`}>{siteSettings.email}</a>
-        </p>
-      )}
-
-      {siteSettings.address && (
-        <p>
-          {t("address")}: {siteSettings.address}
-        </p>
-      )}
-
-      {siteSettings.whatsapp && (
-        <p>
-          {tCommon("whatsapp")}:{" "}
-          <TrackedExternalLink
-            event="whatsapp_click"
-            href={`https://wa.me/${siteSettings.whatsapp.replace(/\D/g, "")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {tCommon("whatsapp")}
-          </TrackedExternalLink>
-        </p>
-      )}
-
-      {siteSettings.socialLinks?.instagram && (
-        <a
-          href={siteSettings.socialLinks.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Instagram
-        </a>
-      )}
-
-      {siteSettings.socialLinks?.facebook && (
-        <a
-          href={siteSettings.socialLinks.facebook}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Facebook
-        </a>
-      )}
-
-      {siteSettings.socialLinks?.linkedin && (
-        <a
-          href={siteSettings.socialLinks.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          LinkedIn
-        </a>
-      )}
+        <div className="flex flex-wrap gap-3">
+          <Link href="/kontakti" className="btn btn-primary">
+            {tNav("contact")}
+          </Link>
+          {siteSettings.whatsapp && (
+            <TrackedExternalLink
+              event="whatsapp_click"
+              href={`https://wa.me/${siteSettings.whatsapp.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-whatsapp"
+            >
+              {tCommon("whatsapp")}
+            </TrackedExternalLink>
+          )}
+        </div>
+      </div>
     </section>
   );
 }

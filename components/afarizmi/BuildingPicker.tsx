@@ -22,7 +22,7 @@ export default async function BuildingPicker({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="building-grid">
       {buildings.map((building) => {
         const imageUrl = building.facadeImage?.asset?.url;
 
@@ -34,7 +34,7 @@ export default async function BuildingPicker({
                 ? `/afarizmi/${building.slug}`
                 : "/afarizmi"
             }
-            className="group block overflow-hidden rounded-lg"
+            className="group block overflow-hidden"
           >
             <article>
               <div className="relative aspect-[16/10] overflow-hidden">
@@ -54,11 +54,11 @@ export default async function BuildingPicker({
               </div>
 
               <div className="pt-4">
-                <h2 className="text-xl font-semibold">
+                <h2 className="font-display text-2xl font-medium">
                   {building.title}
                 </h2>
 
-                <p className="mt-1">
+                <p className="mt-1 text-secondary">
                   {t("freeUnits", {
                     free: building.free ?? 0,
                     total: building.total ?? 0,

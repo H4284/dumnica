@@ -91,10 +91,10 @@ export default function Gallery({ images, title }: GalleryProps) {
 
   return (
     <>
-      <section ref={galleryRef}>
+      <section ref={galleryRef} className="detail-section">
         <h2>{t("gallery")}</h2>
 
-        <div>
+        <div className="gallery-grid">
           {images.map(
             (image, index) =>
               image.asset?.url && (
@@ -125,12 +125,14 @@ export default function Gallery({ images, title }: GalleryProps) {
         <div
           role="dialog"
           aria-modal="true"
+          className="gallery-lightbox"
           onClick={() => setSelectedIndex(null)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
           <button
             type="button"
+            className="gallery-close"
             onClick={() => setSelectedIndex(null)}
             aria-label={t("closeGallery")}
           >
@@ -148,6 +150,7 @@ export default function Gallery({ images, title }: GalleryProps) {
 
           <button
             type="button"
+            className="gallery-nav prev"
             onClick={(event) => {
               event.stopPropagation();
               setSelectedIndex(
@@ -161,6 +164,7 @@ export default function Gallery({ images, title }: GalleryProps) {
 
           <button
             type="button"
+            className="gallery-nav next"
             onClick={(event) => {
               event.stopPropagation();
               setSelectedIndex((selectedIndex! + 1) % images.length);

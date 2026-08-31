@@ -75,25 +75,31 @@ export default async function LegalPage({ params }: LegalPageProps) {
   const href = `/${slug}`;
 
   return (
-    <article>
-      <JsonLd
-        data={breadcrumbJsonLd(locale, [
-          { name: tCommon("home"), href: "/" },
-          { name: title, href },
-        ])}
-      />
+    <article className="page-shell">
+      <div className="site-container pb-20">
+        <JsonLd
+          data={breadcrumbJsonLd(locale, [
+            { name: tCommon("home"), href: "/" },
+            { name: title, href },
+          ])}
+        />
 
-      <Breadcrumbs
-        items={[
-          { href: "/", label: tCommon("home") },
-          { label: title },
-        ]}
-        label={tCommon("breadcrumb")}
-      />
+        <Breadcrumbs
+          items={[
+            { href: "/", label: tCommon("home") },
+            { label: title },
+          ]}
+          label={tCommon("breadcrumb")}
+        />
 
-      <h1>{page.title}</h1>
+        <h1 className="page-title mb-8">{page.title}</h1>
 
-      {page.body && <PortableText value={page.body} />}
+        {page.body && (
+          <div className="legal-prose">
+            <PortableText value={page.body} />
+          </div>
+        )}
+      </div>
     </article>
   );
 }

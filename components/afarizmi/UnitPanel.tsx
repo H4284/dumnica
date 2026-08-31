@@ -11,6 +11,7 @@ import { unitStatusKey } from "@/lib/statusKeys";
 
 import LeadForm from "./LeadForm";
 import TrackedExternalLink from "@/components/analytics/TrackedExternalLink";
+import { Link } from "@/i18n/navigation";
 
 type Unit = UnitsByBuildingQueryResult[number];
 
@@ -18,18 +19,19 @@ type Props = {
   unit: Unit | null;
   onClose: () => void;
   whatsappNumber: string;
+  buildingSlug: string;
 };
 
 function getStatusClass(status: Unit["status"]) {
   switch (status) {
     case "i_lire":
-      return "bg-green-100 text-green-700";
+      return "unit-status-free";
     case "i_rezervuar":
-      return "bg-amber-100 text-amber-700";
+      return "unit-status-reserved";
     case "i_shitur":
-      return "bg-gray-100 text-gray-700";
+      return "unit-status-sold";
     default:
-      return "bg-gray-100 text-gray-700";
+      return "unit-status-sold";
   }
 }
 
@@ -37,6 +39,7 @@ export default function UnitPanel({
   unit,
   onClose,
   whatsappNumber,
+  buildingSlug,
 }: Props) {
   const t = useTranslations("unit");
   const tAfarizmi = useTranslations("afarizmi");
@@ -164,7 +167,7 @@ export default function UnitPanel({
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black/40"
+        className="fixed inset-0 z-[70] bg-black/40"
         aria-hidden="true"
         onClick={handleClose}
       />
@@ -174,7 +177,7 @@ export default function UnitPanel({
         aria-modal="true"
         aria-labelledby="unit-panel-title"
         className="
-          fixed inset-x-0 bottom-0 z-50
+          fixed inset-x-0 bottom-0 z-[80]
           max-h-[90vh]
           overflow-y-auto
           rounded-t-2xl
@@ -246,15 +249,9 @@ export default function UnitPanel({
                 flex h-11 w-11 shrink-0
                 items-center justify-center
                 rounded-full
-                bg-gray-100
+                bg-muted
                 text-xl
-                text-gray-700
-                transition
-                hover:bg-gray-200
-                focus-visible:outline
-                focus-visible:outline-2
-                focus-visible:outline-offset-2
-                focus-visible:outline-black
+                text-primary
               "
             >
               ×
@@ -328,15 +325,11 @@ export default function UnitPanel({
 
               <button
                 type="button"
-                className="
-                  group relative block w-full
-                  overflow-hidden rounded-lg
-                  bg-gray-100
-                  focus-visible:outline
-                  focus-visible:outline-2
-                  focus-visible:outline-offset-2
-                  focus-visible:outline-black
-                "
+              className="
+                group relative block w-full
+                overflow-hidden rounded-sm
+                bg-muted
+              "
                 onClick={() => {
                   window.open(floorPlanUrl, "_blank");
                 }}
@@ -361,6 +354,15 @@ export default function UnitPanel({
             </div>
           )}
 
+          {buildingSlug && unit.code && (
+            <Link
+              href={`/afarizmi/${buildingSlug}/${unit.code}`}
+              className="btn btn-primary mb-3 w-full"
+            >
+              {t("viewDetails")}
+            </Link>
+          )}
+
           {showLeadForm ? (
             <LeadForm
               unitCode={unit.code ?? ""}
@@ -373,21 +375,7 @@ export default function UnitPanel({
                 onClick={() => {
                   setShowLeadForm(true);
                 }}
-                className="
-                  min-h-11 w-full
-                  rounded-lg
-                  bg-black
-                  px-5 py-3
-                  text-sm
-                  font-semibold
-                  text-white
-                  transition
-                  hover:bg-gray-800
-                  focus-visible:outline
-                  focus-visible:outline-2
-                  focus-visible:outline-offset-2
-                  focus-visible:outline-black
-                "
+                className="btn btn-dark w-full"
               >
                 {t("interested")}
               </button>
@@ -397,23 +385,7 @@ export default function UnitPanel({
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="
-                  flex min-h-11 w-full
-                  items-center justify-center
-                  rounded-lg
-                  bg-green-600
-                  px-5 py-3
-                  text-center
-                  text-sm
-                  font-semibold
-                  text-white
-                  transition
-                  hover:bg-green-700
-                  focus-visible:outline
-                  focus-visible:outline-2
-                  focus-visible:outline-offset-2
-                  focus-visible:outline-green-700
-                "
+                className="btn btn-whatsapp w-full"
               >
                 {tCommon("whatsapp")}
               </TrackedExternalLink>
@@ -424,24 +396,7 @@ export default function UnitPanel({
                   onClick={() => {
                     void downloadFloorPlan();
                   }}
-                  className="
-                    flex min-h-11 w-full
-                    items-center justify-center
-                    rounded-lg
-                    border border-border
-                    bg-surface
-                    px-5 py-3
-                    text-center
-                    text-sm
-                    font-semibold
-                    text-primary
-                    transition
-                    hover:bg-muted
-                    focus-visible:outline
-                    focus-visible:outline-2
-                    focus-visible:outline-offset-2
-                    focus-visible:outline-black
-                  "
+                  className="btn btn-ghost w-full"
                 >
                   {t("downloadPlan")}
                 </button>

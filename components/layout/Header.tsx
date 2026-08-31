@@ -5,6 +5,7 @@ import type { SiteSettingsQueryResult } from "@/sanity.types";
 import Nav from "@/components/layout/Nav";
 import MobileNav from "@/components/layout/MobileNav";
 import LanguageSwitch from "@/components/layout/LanguageSwitch";
+import HeaderBar from "@/components/layout/HeaderBar";
 import TrackedExternalLink from "@/components/analytics/TrackedExternalLink";
 import { Link } from "@/i18n/navigation";
 
@@ -16,29 +17,30 @@ export default async function Header({ siteSettings }: HeaderProps) {
   const t = await getTranslations("common");
 
   return (
-    <header>
-      <div className="header-inner">
-        <Link href="/">{t("brand")}</Link>
+    <HeaderBar>
+      <Link href="/" className="site-logo">
+        {t("brand")}
+      </Link>
 
-        <Nav />
+      <Nav />
 
-        <MobileNav whatsapp={siteSettings?.whatsapp} />
+      <div className="header-actions">
+        <Suspense fallback={null}>
+          <LanguageSwitch />
+        </Suspense>
 
-        <div className="header-actions">
-          <Suspense fallback={null}>
-            <LanguageSwitch />
-          </Suspense>
-
-          {siteSettings?.whatsapp && (
-            <TrackedExternalLink
-              event="whatsapp_click"
-              href={`https://wa.me/${siteSettings.whatsapp.replace(/\D/g, "")}`}
-            >
-              {t("whatsapp")}
-            </TrackedExternalLink>
-          )}
-        </div>
+        {siteSettings?.whatsapp && (
+          <TrackedExternalLink
+            event="whatsapp_click"
+            href={`https://wa.me/${siteSettings.whatsapp.replace(/\D/g, "")}`}
+            className="btn btn-whatsapp"
+          >
+            {t("whatsapp")}
+          </TrackedExternalLink>
+        )}
       </div>
-    </header>
+
+      <MobileNav whatsapp={siteSettings?.whatsapp} />
+    </HeaderBar>
   );
 }

@@ -86,30 +86,34 @@ export default async function BuildingPage({ params }: Props) {
 
   if (!currentBuilding.facadeImage?.asset?.url) {
     return (
-      <main>
-        <JsonLd data={jsonLd} />
-        <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
-        <h1>{currentBuilding.title}</h1>
-        <p>{t("facadeMissing")}</p>
-      </main>
+      <div className="page-shell">
+        <div className="site-container pb-20">
+          <JsonLd data={jsonLd} />
+          <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
+          <h1 className="page-title">{currentBuilding.title}</h1>
+          <p className="page-lede">{t("facadeMissing")}</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-10">
-      <JsonLd data={jsonLd} />
+    <div className="page-shell">
+      <div className="site-container-wide pb-20">
+        <JsonLd data={jsonLd} />
 
-      <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
+        <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
 
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold">{currentBuilding.title}</h1>
-      </header>
+        <header className="mb-10 pt-4">
+          <h1 className="page-title">{currentBuilding.title}</h1>
+        </header>
 
-      <BuildingExplorer
-        building={currentBuilding}
-        units={units}
-        whatsappNumber={siteSettings?.whatsapp ?? ""}
-      />
-    </main>
+        <BuildingExplorer
+          building={currentBuilding}
+          units={units}
+          whatsappNumber={siteSettings?.whatsapp ?? ""}
+        />
+      </div>
+    </div>
   );
 }

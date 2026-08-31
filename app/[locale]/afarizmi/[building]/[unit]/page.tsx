@@ -192,153 +192,144 @@ export default async function UnitPage({ params }: Props) {
   ];
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-10">
-      <PageEvent event="unit_view" />
-      <JsonLd data={jsonLd} />
+    <div className="page-shell">
+      <div className="site-container pb-20">
+        <PageEvent event="unit_view" />
+        <JsonLd data={jsonLd} />
 
-      <Breadcrumbs
-        items={[
-          { href: "/", label: tCommon("home") },
-          { href: "/afarizmi", label: tNav("afarizmi") },
-          { href: buildingHref, label: buildingTitle },
-          { label: unitCode },
-        ]}
-        label={tCommon("breadcrumb")}
-      />
+        <Breadcrumbs
+          items={[
+            { href: "/", label: tCommon("home") },
+            { href: "/afarizmi", label: tNav("afarizmi") },
+            { href: buildingHref, label: buildingTitle },
+            { label: unitCode },
+          ]}
+          label={tCommon("breadcrumb")}
+        />
 
-      <header className="mb-10 text-primary">
-        <p className="mb-2 text-sm text-secondary">
-          {buildingTitle}
-        </p>
+        <header className="mb-10 pt-4">
+          <p className="section-kicker">{buildingTitle}</p>
+          <h1 className="page-title">
+            {t("codeTitle", { code: unitCode })}
+          </h1>
+          <p className="mt-3 text-secondary">{statusLabel}</p>
+        </header>
 
-        <h1 className="text-3xl font-bold text-primary">
-          {t("codeTitle", { code: unitCode })}
-        </h1>
-
-        <p className="mt-2 text-primary">
-          {statusLabel}
-        </p>
-      </header>
-
-      <section className="grid gap-6 rounded-xl border border-border bg-surface p-6 text-primary sm:grid-cols-2">
-        <div>
-          <p className="text-sm text-secondary">{tAfarizmi("rooms")}</p>
-          <p className="text-xl font-semibold text-primary">
-            {currentUnit.rooms ?? "—"}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-sm text-secondary">{t("netArea")}</p>
-          <p className="text-xl font-semibold text-primary">
-            {currentUnit.areaNet
-              ? `${currentUnit.areaNet} m²`
-              : "—"}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-sm text-secondary">{t("grossArea")}</p>
-          <p className="text-xl font-semibold text-primary">
-            {currentUnit.areaGross
-              ? `${currentUnit.areaGross} m²`
-              : "—"}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-sm text-secondary">{tAfarizmi("floor")}</p>
-          <p className="text-xl font-semibold text-primary">{floorLabel}</p>
-        </div>
-
-        <div>
-          <p className="text-sm text-secondary">{t("orientation")}</p>
-          <p className="text-xl font-semibold text-primary">
-            {formatOrientation(currentUnit.orientation, {
-              east: tFilters("east"),
-              west: tFilters("west"),
-              north: tFilters("north"),
-              south: tFilters("south"),
-            })}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-sm text-secondary">{t("type")}</p>
-          <p className="text-xl font-semibold text-primary">
-            {currentUnit.unitType === "banesor"
-              ? t("residential")
-              : currentUnit.unitType === "afarist"
-                ? t("commercial")
-                : "—"}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-sm text-secondary">{t("price")}</p>
-          <p className="text-xl font-semibold text-primary">{priceLabel}</p>
-        </div>
-      </section>
-
-      {currentUnit.floorPlanImage?.asset?.url && (
-        <section className="mt-10">
-          <h2 className="mb-4 text-2xl font-semibold">
-            {t("plan")}
-          </h2>
-
-          <Image
-            src={currentUnit.floorPlanImage.asset.url}
-            alt={t("planAlt", { code: unitCode })}
-            width={
-              currentUnit.floorPlanImage.asset.metadata?.dimensions?.width ??
-              1600
-            }
-            height={
-              currentUnit.floorPlanImage.asset.metadata?.dimensions?.height ??
-              2263
-            }
-            sizes="(max-width: 1024px) 100vw, 1024px"
-            className="w-full rounded-lg h-auto"
-          />
-        </section>
-      )}
-
-      {currentUnit.floorPlanPdf?.asset?.url && (
-        <section className="mt-8">
-          <a
-            href={currentUnit.floorPlanPdf.asset.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex rounded-lg border px-5 py-3 font-medium"
-          >
-            {t("viewPdf")}
-          </a>
-        </section>
-      )}
-
-      <section className="mt-10">
-        {currentUnit.status === "i_shitur" ? (
-          <div className="rounded-lg border p-5">
-            <h2 className="font-semibold">{t("soldTitle")}</h2>
-
-            <p className="mt-1 text-sm text-gray-600">{t("soldHint")}</p>
-
-            <Link
-              href={`/afarizmi/${building}`}
-              className="mt-4 inline-flex rounded-lg bg-black px-5 py-3 text-white"
-            >
-              {t("similarUnits")}
-            </Link>
+        <section className="spec-grid surface-card">
+          <div>
+            <p className="text-sm text-secondary">{tAfarizmi("rooms")}</p>
+            <p className="mt-1 font-display text-2xl">
+              {currentUnit.rooms ?? "—"}
+            </p>
           </div>
-        ) : (
-          <Link
-            href={interactiveUrl}
-            className="inline-flex rounded-lg bg-black px-5 py-3 text-white"
-          >
-            {t("openExplorer")}
-          </Link>
+
+          <div>
+            <p className="text-sm text-secondary">{t("netArea")}</p>
+            <p className="mt-1 font-display text-2xl">
+              {currentUnit.areaNet
+                ? `${currentUnit.areaNet} m²`
+                : "—"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm text-secondary">{t("grossArea")}</p>
+            <p className="mt-1 font-display text-2xl">
+              {currentUnit.areaGross
+                ? `${currentUnit.areaGross} m²`
+                : "—"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm text-secondary">{tAfarizmi("floor")}</p>
+            <p className="mt-1 font-display text-2xl">{floorLabel}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-secondary">{t("orientation")}</p>
+            <p className="mt-1 font-display text-2xl">
+              {formatOrientation(currentUnit.orientation, {
+                east: tFilters("east"),
+                west: tFilters("west"),
+                north: tFilters("north"),
+                south: tFilters("south"),
+              })}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm text-secondary">{t("type")}</p>
+            <p className="mt-1 font-display text-2xl">
+              {currentUnit.unitType === "banesor"
+                ? t("residential")
+                : currentUnit.unitType === "afarist"
+                  ? t("commercial")
+                  : "—"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm text-secondary">{t("price")}</p>
+            <p className="mt-1 font-display text-2xl">{priceLabel}</p>
+          </div>
+        </section>
+
+        {currentUnit.floorPlanImage?.asset?.url && (
+          <section className="detail-section">
+            <h2>{t("plan")}</h2>
+
+            <Image
+              src={currentUnit.floorPlanImage.asset.url}
+              alt={t("planAlt", { code: unitCode })}
+              width={
+                currentUnit.floorPlanImage.asset.metadata?.dimensions?.width ??
+                1600
+              }
+              height={
+                currentUnit.floorPlanImage.asset.metadata?.dimensions?.height ??
+                2263
+              }
+              sizes="(max-width: 1024px) 100vw, 1024px"
+              className="h-auto w-full rounded-sm"
+            />
+          </section>
         )}
-      </section>
-    </main>
+
+        {currentUnit.floorPlanPdf?.asset?.url && (
+          <section className="mt-4">
+            <a
+              href={currentUnit.floorPlanPdf.asset.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
+              {t("viewPdf")}
+            </a>
+          </section>
+        )}
+
+        <section className="detail-section">
+          {currentUnit.status === "i_shitur" ? (
+            <div className="surface-card">
+              <h2 className="font-display text-2xl">{t("soldTitle")}</h2>
+
+              <p className="mt-2 text-sm text-secondary">{t("soldHint")}</p>
+
+              <Link
+                href={`/afarizmi/${building}`}
+                className="btn btn-primary mt-6"
+              >
+                {t("similarUnits")}
+              </Link>
+            </div>
+          ) : (
+            <Link href={interactiveUrl} className="btn btn-primary">
+              {t("openExplorer")}
+            </Link>
+          )}
+        </section>
+      </div>
+    </div>
   );
 }

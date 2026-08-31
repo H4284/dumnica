@@ -4,6 +4,7 @@ import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import Gallery from "@/components/projects/Gallery";
+import { Link } from "@/i18n/navigation";
 import LocationMap from "@/components/projects/LocationMap";
 import BrochureDownload from "@/components/projects/BrochureDownload";
 import Breadcrumbs from "@/components/seo/Breadcrumbs";
@@ -74,6 +75,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const t = await getTranslations("projects");
   const tCommon = await getTranslations("common");
+  const tNav = await getTranslations("nav");
   const tStatus = await getTranslations("projectStatus");
   const project = await getProjectBySlug(slug, locale);
 
@@ -126,118 +128,135 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   ];
 
   return (
-    <main>
+    <div className="page-shell pb-20">
       <JsonLd data={jsonLd} />
 
-      <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
+      <div className="site-container">
+        <Breadcrumbs items={crumbs} label={tCommon("breadcrumb")} />
+      </div>
 
       {project.mainPhoto?.asset?.url && (
-        <section>
-          <Image
-            src={project.mainPhoto.asset.url}
-            alt={project.title || t("imageAlt")}
-            width={1600}
-            height={900}
-            sizes="(max-width: 768px) 100vw, 1600px"
-            priority
-          />
+        <section className="project-hero">
+          <div className="project-hero-media">
+            <Image
+              src={project.mainPhoto.asset.url}
+              alt={project.title || t("imageAlt")}
+              fill
+              sizes="100vw"
+              priority
+              className="object-cover"
+            />
+          </div>
         </section>
       )}
 
-      <section>
-        <h1>{project.title}</h1>
+      <div className="site-container">
+        <section className="detail-section">
+          <h1 className="page-title">{project.title}</h1>
 
-        {project.city && <p>{project.city}</p>}
+          <div className="project-meta">
+            {project.city && <span>{project.city}</span>}
+            {statusKey && (
+              <span>{t("statusLabel", { status: tStatus(statusKey) })}</span>
+            )}
+          </div>
 
-        {project.description && (
-          <p className="prose-text">{project.description}</p>
+          {project.description && (
+            <p className="page-lede">{project.description}</p>
+          )}
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/kontakti" className="btn btn-primary">
+              {tNav("contact")}
+            </Link>
+            <Link href="/afarizmi" className="btn btn-ghost">
+              {tNav("afarizmi")}
+            </Link>
+          </div>
+        </section>
+
+        {project.video && (
+          <section className="detail-section">
+            <h2>{t("video")}</h2>
+            <a
+              href={project.video}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
+              {t("watchVideo")}
+            </a>
+          </section>
         )}
-      </section>
 
-      {project.video && (
-        <section>
-          <h2>{t("video")}</h2>
-          <a
-            href={project.video}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t("watchVideo")}
-          </a>
-        </section>
-      )}
+        {project.specifications && project.specifications.length > 0 && (
+          <section className="detail-section">
+            <h2>{t("specifications")}</h2>
 
-      {project.specifications && project.specifications.length > 0 && (
-        <section>
-          <h2>{t("specifications")}</h2>
+            <ul className="stack-list">
+              {project.specifications.map((specification, index) => (
+                <li key={index}>{specification}</li>
+              ))}
+            </ul>
+          </section>
+        )}
 
-          <ul>
-            {project.specifications.map((specification, index) => (
-              <li key={index}>{specification}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+        {project.amenities && project.amenities.length > 0 && (
+          <section className="detail-section">
+            <h2>{t("amenities")}</h2>
 
-      {project.amenities && project.amenities.length > 0 && (
-        <section>
-          <h2>{t("amenities")}</h2>
+            <ul className="stack-list">
+              {project.amenities.map((amenity, index) => (
+                <li key={index}>{amenity}</li>
+              ))}
+            </ul>
+          </section>
+        )}
 
-          <ul>
-            {project.amenities.map((amenity, index) => (
-              <li key={index}>{amenity}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+        {project.paymentPlan && project.paymentPlan.length > 0 && (
+          <section className="detail-section">
+            <h2>{t("paymentPlan")}</h2>
 
-      {project.paymentPlan && project.paymentPlan.length > 0 && (
-        <section>
-          <h2>{t("paymentPlan")}</h2>
+            <ul className="stack-list">
+              {project.paymentPlan.map((payment, index) => (
+                <li key={index}>
+                  {payment.label && <span>{payment.label}</span>}
+                  {payment.percentage !== null &&
+                    payment.percentage !== undefined && (
+                      <span>{payment.percentage}%</span>
+                    )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
-          <ul>
-            {project.paymentPlan.map((payment, index) => (
-              <li key={index}>
-                {payment.label && <span>{payment.label}</span>}
-                {payment.percentage !== null &&
-                  payment.percentage !== undefined && (
-                    <span>{payment.percentage}%</span>
-                  )}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+        {project.gallery && project.gallery.length > 0 && (
+          <Gallery
+            images={project.gallery}
+            title={project.title || t("imageAlt")}
+          />
+        )}
 
-      {project.gallery && project.gallery.length > 0 && (
-        <Gallery
-          images={project.gallery}
-          title={project.title || t("imageAlt")}
-        />
-      )}
+        {project.brochure?.asset?.url && (
+          <BrochureDownload url={project.brochure.asset.url} />
+        )}
 
-      {project.brochure?.asset?.url && (
-        <BrochureDownload url={project.brochure.asset.url} />
-      )}
+        {project.location && (
+          <LocationMap
+            latitude={project.location.lat}
+            longitude={project.location.lng}
+          />
+        )}
 
-      {project.location && (
-        <LocationMap
-          latitude={project.location.lat}
-          longitude={project.location.lng}
-        />
-      )}
+        {project.finishDate && (
+          <section className="detail-section">
+            <h2>{t("finishDate")}</h2>
 
-      {project.finishDate && (
-        <section>
-          <h2>{t("finishDate")}</h2>
-
-          <p>{formatDate(project.finishDate, locale)}</p>
-        </section>
-      )}
-
-      {statusKey && (
-        <p>{t("statusLabel", { status: tStatus(statusKey) })}</p>
-      )}
-    </main>
+            <p>{formatDate(project.finishDate, locale)}</p>
+          </section>
+        )}
+      </div>
+    </div>
   );
 }

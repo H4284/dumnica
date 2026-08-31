@@ -32,11 +32,12 @@ export default function ProjectFilters({ cities }: ProjectFiltersProps) {
   );
 
   return (
-    <div>
+    <div className="filter-bar">
       <label>
         {t("city")}
 
         <select
+          className="field-select"
           value={city}
           onChange={(event) => setCity(event.target.value || null)}
         >
@@ -54,6 +55,7 @@ export default function ProjectFilters({ cities }: ProjectFiltersProps) {
         {t("status")}
 
         <select
+          className="field-select"
           value={status}
           onChange={(event) => setStatus(event.target.value || null)}
         >

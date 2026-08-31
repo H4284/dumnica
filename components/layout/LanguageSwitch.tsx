@@ -18,7 +18,7 @@ export default function LanguageSwitch() {
       : pathname;
 
   return (
-    <nav aria-label={t("switchLanguage")}>
+    <nav aria-label={t("switchLanguage")} className="lang-switch">
       {routing.locales.map((item) => (
         <Link
           key={item}

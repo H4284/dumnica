@@ -69,7 +69,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                     : Number(event.target.value),
               })
             }
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
+            className="field-select"
           >
             <option value="">{t("allFloors")}</option>
 
@@ -94,7 +94,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                     : Number(event.target.value),
               })
             }
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
+            className="field-select"
           >
             <option value="">{t("all")}</option>
             <option value="1">{t("roomsCount", { count: 1 })}</option>
@@ -121,7 +121,7 @@ export default function UnitFilters({ floorsCount }: Props) {
               })
             }
             placeholder={t("minPlaceholder")}
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary placeholder:text-secondary"
+            className="field-input"
           />
         </label>
 
@@ -141,7 +141,7 @@ export default function UnitFilters({ floorsCount }: Props) {
               })
             }
             placeholder={t("maxPlaceholder")}
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary placeholder:text-secondary"
+            className="field-input"
           />
         </label>
 
@@ -158,7 +158,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                     : event.target.value,
               });
             }}
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
+            className="field-select"
           >
             <option value="">{t("all")}</option>
             <option value="L">{t("east")}</option>
@@ -178,7 +178,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                 status: event.target.value,
               })
             }
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
+            className="field-select"
           >
             <option value="i_lire">{t("onlyFree")}</option>
             <option value="i_rezervuar">{t("reserved")}</option>
@@ -197,7 +197,7 @@ export default function UnitFilters({ floorsCount }: Props) {
                 type: event.target.value === "" ? null : event.target.value,
               })
             }
-            className="rounded-lg border border-border bg-surface px-3 py-2 text-primary"
+            className="field-select"
           >
             <option value="">{t("all")}</option>
             <option value="banesor">{t("residential")}</option>

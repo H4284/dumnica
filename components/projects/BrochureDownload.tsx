@@ -15,7 +15,7 @@ export default function BrochureDownload({ url }: BrochureDownloadProps) {
   };
 
   return (
-    <section>
+    <section className="detail-section">
       <h2>{t("brochure")}</h2>
 
       <a
@@ -23,6 +23,7 @@ export default function BrochureDownload({ url }: BrochureDownloadProps) {
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleDownload}
+        className="btn btn-primary"
       >
         {t("downloadBrochure")}
       </a>

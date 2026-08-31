@@ -55,34 +55,33 @@ export default async function ReportPage({
 
   if (!unlocked) {
     return (
-      <main className="mx-auto w-full max-w-md px-4 py-10">
-        <h1 className="mb-4 text-2xl font-bold">{t("title")}</h1>
-        <p className="mb-6 text-sm text-secondary">{t("lockHint")}</p>
-        {error && (
-          <p role="alert" className="mb-4 text-sm text-red-700">
-            {t("wrongPassword")}
-          </p>
-        )}
-        <form action={unlockReport} className="space-y-4">
-          <input type="hidden" name="locale" value={locale} />
-          <label htmlFor="report-password" className="block text-sm">
-            {t("password")}
-          </label>
-          <input
-            id="report-password"
-            name="password"
-            type="password"
-            required
-            className="w-full rounded-lg border border-border px-3 py-2.5"
-          />
-          <button
-            type="submit"
-            className="rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white"
-          >
-            {t("unlock")}
-          </button>
-        </form>
-      </main>
+      <div className="page-shell">
+        <div className="site-container max-w-md pb-20">
+          <h1 className="page-title mb-4">{t("title")}</h1>
+          <p className="mb-6 text-sm text-secondary">{t("lockHint")}</p>
+          {error && (
+            <p role="alert" className="mb-4 text-sm text-danger">
+              {t("wrongPassword")}
+            </p>
+          )}
+          <form action={unlockReport} className="space-y-4">
+            <input type="hidden" name="locale" value={locale} />
+            <label htmlFor="report-password" className="block text-sm">
+              {t("password")}
+            </label>
+            <input
+              id="report-password"
+              name="password"
+              type="password"
+              required
+              className="field-input"
+            />
+            <button type="submit" className="btn btn-primary">
+              {t("unlock")}
+            </button>
+          </form>
+        </div>
+      </div>
     );
   }
 
@@ -95,9 +94,10 @@ export default async function ReportPage({
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-10">
-      <h1 className="mb-2 text-3xl font-bold">{t("title")}</h1>
-      <p className="mb-8 text-secondary">{t("intro")}</p>
+    <div className="page-shell">
+      <div className="site-container pb-20">
+        <h1 className="page-title mb-2">{t("title")}</h1>
+        <p className="page-lede mb-8">{t("intro")}</p>
 
       {sheetUrl && (
         <p className="mb-6">
@@ -123,9 +123,9 @@ export default async function ReportPage({
       </section>
 
       {rows.length > 0 && (
-        <section>
+        <section className="overflow-x-auto">
           <h2 className="mb-3 text-xl font-semibold">{t("recent")}</h2>
-          <table className="w-full text-left text-sm">
+          <table className="report-table">
             <thead>
               <tr>
                 <th className="py-2">{t("date")}</th>
@@ -151,6 +151,7 @@ export default async function ReportPage({
           </table>
         </section>
       )}
-    </main>
+      </div>
+    </div>
   );
 }

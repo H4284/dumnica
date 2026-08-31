@@ -20,9 +20,9 @@ export default function Hero({ homePage }: HeroProps) {
     (buttonLink!.startsWith("http://") || buttonLink!.startsWith("https://"));
 
   return (
-    <section>
+    <section className="hero">
       {imageUrl && (
-        <div className="relative aspect-[16/9] w-full overflow-hidden">
+        <div className="hero-media">
           <Image
             src={imageUrl}
             alt={homePage.heroTitle || "Dumnica"}
@@ -34,16 +34,21 @@ export default function Hero({ homePage }: HeroProps) {
           />
         </div>
       )}
-
-      <h1>{homePage.heroTitle || "Dumnica"}</h1>
-
-      {homePage.heroButtonText && buttonLink && (
-        isExternal ? (
-          <a href={buttonLink}>{homePage.heroButtonText}</a>
-        ) : (
-          <Link href={buttonLink}>{homePage.heroButtonText}</Link>
-        )
-      )}
+      <div className="hero-overlay" />
+      <div className="site-container hero-content">
+        <h1 className="hero-title">{homePage.heroTitle || "Dumnica"}</h1>
+        {homePage.heroButtonText && buttonLink && (
+          isExternal ? (
+            <a href={buttonLink} className="btn btn-primary mt-8">
+              {homePage.heroButtonText}
+            </a>
+          ) : (
+            <Link href={buttonLink} className="btn btn-primary mt-8">
+              {homePage.heroButtonText}
+            </Link>
+          )
+        )}
+      </div>
     </section>
   );
 }

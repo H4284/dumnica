@@ -20,12 +20,9 @@ export default function Button({
 }: ButtonProps) {
   const t = useTranslations("common");
   const variantClasses = {
-    primary:
-      "bg-primary text-white hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.98]",
-    secondary:
-      "border border-border bg-surface text-primary hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.98]",
-    danger:
-      "bg-danger text-white hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger active:scale-[0.98]",
+    primary: "btn btn-primary",
+    secondary: "btn btn-ghost",
+    danger: "btn bg-danger text-white",
   };
 
   return (
@@ -33,10 +30,8 @@ export default function Button({
       {...props}
       disabled={disabled || loading}
       aria-busy={loading}
-      className={`inline-flex min-h-11 items-center justify-center rounded-md px-5 py-2.5 text-base font-medium transition-all duration-200 ${variantClasses[variant]} ${
-        disabled || loading
-          ? "cursor-not-allowed opacity-50"
-          : "cursor-pointer"
+      className={`${variantClasses[variant]} ${
+        disabled || loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
       } ${props.className ?? ""}`}
     >
       {loading ? t("loading") : children}

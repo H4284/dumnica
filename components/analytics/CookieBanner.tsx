@@ -16,9 +16,9 @@ export default function CookieBanner() {
     <div
       role="dialog"
       aria-labelledby="cookie-banner-title"
-      className="fixed inset-x-0 bottom-0 z-[60] border-t border-border bg-surface p-4 shadow-lg"
+      className="cookie-banner"
     >
-      <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="site-container flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 id="cookie-banner-title" className="text-base font-semibold">
             {t("title")}
@@ -27,18 +27,10 @@ export default function CookieBanner() {
         </div>
 
         <div className="flex shrink-0 gap-3">
-          <button
-            type="button"
-            onClick={reject}
-            className="rounded-lg border border-border px-4 py-2 text-sm"
-          >
+          <button type="button" onClick={reject} className="btn btn-ghost">
             {t("reject")}
           </button>
-          <button
-            type="button"
-            onClick={accept}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white"
-          >
+          <button type="button" onClick={accept} className="btn btn-dark">
             {t("accept")}
           </button>
         </div>

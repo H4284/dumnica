@@ -71,9 +71,9 @@ export default function FloorPlan({
   return (
     <section className="mt-12">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold">{t("planTitle")}</h2>
+        <h2 className="font-display text-2xl font-medium">{t("planTitle")}</h2>
 
-        <p className="mt-1 text-sm text-gray-500">{t("chooseHint")}</p>
+        <p className="mt-1 text-sm text-secondary">{t("chooseHint")}</p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
@@ -83,7 +83,7 @@ export default function FloorPlan({
           onFloorChange={handleFloorChange}
         />
 
-        <div className="relative overflow-hidden rounded-lg bg-gray-50">
+        <div className="relative overflow-hidden rounded-sm bg-muted">
           {floorPlans.length > 0 && activePlan?.asset?.url ? (
             <div className="relative">
               <div className="relative overflow-hidden">
@@ -149,8 +149,8 @@ export default function FloorPlan({
               )}
             </div>
           ) : (
-            <div className="flex min-h-80 items-center justify-center rounded-lg bg-gray-100">
-              <p className="text-sm text-gray-500">
+            <div className="flex min-h-80 items-center justify-center rounded-sm bg-muted">
+              <p className="text-sm text-secondary">
                 {t("missing", { floor: floorLabel })}
               </p>
             </div>

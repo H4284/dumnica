@@ -132,7 +132,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
         <button
           type="button"
           onClick={onClose}
-          className="mt-5 rounded-lg bg-black px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800"
+          className="btn btn-dark mt-5"
         >
           {t("close")}
         </button>
@@ -173,7 +173,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           onChange={handleChange}
           required
           autoComplete="name"
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
+          className="field-input"
           placeholder={t("namePlaceholder")}
         />
       </div>
@@ -194,7 +194,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           onChange={handleChange}
           required
           autoComplete="tel"
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
+          className="field-input"
           placeholder={t("phonePlaceholder")}
         />
       </div>
@@ -215,7 +215,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           value={form.email}
           onChange={handleChange}
           autoComplete="email"
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
+          className="field-input"
           placeholder={t("emailPlaceholder")}
         />
       </div>
@@ -234,7 +234,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
           value={form.message}
           onChange={handleChange}
           rows={4}
-          className="w-full resize-none rounded-lg border border-border bg-surface px-3 py-2.5 text-primary outline-none transition placeholder:text-secondary focus:border-primary"
+          className="field-textarea"
         />
       </div>
 
@@ -252,7 +252,7 @@ export default function LeadForm({ unitCode, onClose }: Props) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? t("submitting") : t("submit")}
       </button>
